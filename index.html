@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mag4D-SLAM Dataset</title>
+    <meta name="description" content="A Repeated-Traversal Multi-Modal 4D Geomagnetic Dataset for Localization and Mapping">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+            line-height: 1.7;
+            color: #1a1a2e;
+            background: #f5f7fa;
+        }
+
+        /* ── Header ── */
+        header {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            text-align: center;
+            padding: 80px 20px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(0,200,180,0.12) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 30%, rgba(0,150,255,0.10) 0%, transparent 55%);
+        }
+
+        header > * { position: relative; z-index: 1; }
+
+        .venue-badge {
+            display: inline-block;
+            background: rgba(0, 210, 180, 0.2);
+            border: 1px solid rgba(0, 210, 180, 0.5);
+            color: #00d2b4;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            line-height: 1.25;
+            max-width: 820px;
+            margin: 0 auto 12px;
+        }
+
+        h1 span.accent { color: #00d2b4; }
+
+        .subtitle {
+            font-size: 1.15em;
+            opacity: 0.75;
+            max-width: 680px;
+            margin: 0 auto 32px;
+        }
+
+        .authors {
+            font-size: 1.05em;
+            margin-bottom: 8px;
+        }
+
+        .authors a {
+            color: #7dd3f5;
+            text-decoration: none;
+            margin: 0 6px;
+            border-bottom: 1px solid rgba(125,211,245,0.3);
+            transition: border-color 0.2s;
+        }
+
+        .authors a:hover { border-bottom-color: #7dd3f5; }
+
+        .authors sup { font-size: 0.7em; margin-left: 1px; }
+
+        .affiliation {
+            font-size: 0.88em;
+            opacity: 0.65;
+            margin-bottom: 36px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 26px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-decoration: none;
+            transition: all 0.25s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #00d2b4;
+            color: #0f2027;
+        }
+
+        .btn-primary:hover {
+            background: #00f0ce;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,210,180,0.35);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 1.5px solid rgba(255,255,255,0.4);
+        }
+
+        .btn-outline:hover {
+            border-color: white;
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-2px);
+        }
+
+        /* ── Layout ── */
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 70px 0;
+        }
+
+        section:nth-child(even) {
+            background: white;
+        }
+
+        .section-inner {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            font-size: 2em;
+            font-weight: 700;
+            color: #0f2027;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .section-line {
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(90deg, #00d2b4, #2c5364);
+            border-radius: 2px;
+            margin: 0 auto 40px;
+        }
+
+        /* ── Abstract ── */
+        .abstract-box {
+            background: #f0fafa;
+            border-left: 4px solid #00d2b4;
+            border-radius: 0 12px 12px 0;
+            padding: 32px 36px;
+            font-size: 1.04em;
+            line-height: 1.85;
+            text-align: justify;
+            color: #2d3748;
+        }
+
+        /* ── Highlights ── */
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .highlight-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 28px 24px;
+            transition: all 0.25s;
+        }
+
+        .highlight-card:hover {
+            border-color: #00d2b4;
+            box-shadow: 0 6px 24px rgba(0,210,180,0.12);
+            transform: translateY(-3px);
+        }
+
+        .highlight-icon {
+            font-size: 2.2em;
+            margin-bottom: 12px;
+        }
+
+        .highlight-card h3 {
+            font-size: 1.05em;
+            font-weight: 700;
+            color: #0f2027;
+            margin-bottom: 8px;
+        }
+
+        .highlight-card p {
+            font-size: 0.9em;
+            color: #4a5568;
+            line-height: 1.65;
+        }
+
+        /* ── Stats ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+            color: white;
+            border-radius: 14px;
+            padding: 28px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(15,32,39,0.2);
+        }
+
+        .stat-value {
+            font-size: 2.4em;
+            font-weight: 800;
+            color: #00d2b4;
+            display: block;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.88em;
+            opacity: 0.8;
+        }
+
+        /* ── Sensors ── */
+        .sensor-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+        }
+
+        .sensor-table thead tr {
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: white;
+        }
+
+        .sensor-table th {
+            padding: 14px 18px;
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .sensor-table tbody tr {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.15s;
+        }
+
+        .sensor-table tbody tr:hover { background: #f0fafa; }
+
+        .sensor-table td {
+            padding: 13px 18px;
+            color: #2d3748;
+            vertical-align: top;
+        }
+
+        .sensor-table td:first-child {
+            font-weight: 600;
+            color: #0f2027;
+        }
+
+        .sensor-badge {
+            display: inline-block;
+            background: rgba(0,210,180,0.12);
+            color: #007a6e;
+            border: 1px solid rgba(0,210,180,0.3);
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.78em;
+            font-weight: 600;
+        }
+
+        /* ── Sequences ── */
+        .seq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 18px;
+        }
+
+        .seq-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 22px 20px;
+            transition: all 0.25s;
+        }
+
+        .seq-card:hover {
+            border-color: #00d2b4;
+            box-shadow: 0 4px 20px rgba(0,210,180,0.12);
+            transform: translateY(-2px);
+        }
+
+        .seq-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .seq-icon {
+            font-size: 1.5em;
+        }
+
+        .seq-name {
+            font-size: 0.95em;
+            font-weight: 700;
+            color: #0f2027;
+        }
+
+        .seq-meta {
+            font-size: 0.82em;
+            color: #718096;
+            line-height: 1.7;
+        }
+
+        .seq-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 8px;
+            font-size: 0.73em;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .tag-day { background: #fef3c7; color: #92400e; }
+        .tag-night { background: #e0e7ff; color: #3730a3; }
+        .tag-circle { background: #d1fae5; color: #065f46; }
+        .tag-rect { background: #fce7f3; color: #9d174d; }
+
+        /* ── Comparison Table ── */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        }
+
+        .compare-table thead tr {
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: white;
+        }
+
+        .compare-table th {
+            padding: 13px 14px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .compare-table th:first-child,
+        .compare-table th:nth-child(2) { text-align: left; }
+
+        .compare-table tbody tr {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.15s;
+        }
+
+        .compare-table tbody tr.ours {
+            background: linear-gradient(90deg, #f0fafa, white);
+            font-weight: 700;
+        }
+
+        .compare-table tbody tr.ours td:nth-child(2) { color: #007a6e; }
+
+        .compare-table tbody tr:hover { background: #f7faff; }
+
+        .compare-table td {
+            padding: 11px 14px;
+            color: #2d3748;
+            text-align: center;
+        }
+
+        .compare-table td:first-child,
+        .compare-table td:nth-child(2) { text-align: left; }
+
+        .check { color: #00b894; font-size: 1.1em; }
+        .cross { color: #e74c3c; font-size: 1.1em; }
+
+        /* ── File Structure ── */
+        .file-tree {
+            background: #0f2027;
+            color: #a8d8cf;
+            border-radius: 12px;
+            padding: 28px 32px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.9;
+            overflow-x: auto;
+        }
+
+        .file-tree .dir { color: #00d2b4; font-weight: 600; }
+        .file-tree .file { color: #a8d8cf; }
+        .file-tree .comment { color: #4a6a62; }
+
+        /* ── ROS Topics ── */
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 14px;
+        }
+
+        .topic-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .topic-name {
+            font-family: 'Courier New', monospace;
+            font-size: 0.83em;
+            font-weight: 700;
+            color: #007a6e;
+            background: rgba(0,210,180,0.08);
+            padding: 2px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .topic-desc {
+            font-size: 0.88em;
+            color: #4a5568;
+        }
+
+        /* ── Citation ── */
+        .bibtex {
+            background: #1a1a2e;
+            color: #a8d8cf;
+            border-radius: 12px;
+            padding: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.88em;
+            line-height: 1.8;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: #00d2b4;
+            color: #0f2027;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 0.82em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover { background: #00f0ce; }
+
+        /* ── Footer ── */
+        footer {
+            background: #0f2027;
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            padding: 36px 20px;
+            font-size: 0.9em;
+        }
+
+        footer a { color: #00d2b4; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.9em; }
+            h2 { font-size: 1.5em; }
+            .abstract-box { padding: 22px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+    <div class="venue-badge">IROS 2026</div>
+    <h1><span class="accent">Mag4D</span>-SLAM Dataset:<br>A Repeated-Traversal Multi-Modal<br>4D Geomagnetic Dataset for Localization and Mapping</h1>
+    <p class="subtitle">The first robotics-oriented benchmark for geomagnetic-aware SLAM with structured repeated-traversal trajectories</p>
+
+    <div class="authors">
+        <a href="#">Bibhutibhusan Nayak</a><sup>1</sup>,
+        <a href="#">Hyoseok Ju</a><sup>1</sup>,
+        <a href="#">Giseop Kim</a><sup>1*</sup>
+    </div>
+    <div class="affiliation">
+        <sup>1</sup>Daegu Gyeongbuk Institute of Science and Technology (DGIST), Republic of Korea
+    </div>
+
+    <div class="btn-group">
+        <a href="#" class="btn btn-primary">📄 Paper</a>
+        <a href="#" class="btn btn-outline">💻 GitHub</a>
+        <a href="#" class="btn btn-outline">📥 Download Dataset</a>
+    </div>
+</header>
+
+
+<!-- ══ ABSTRACT ══ -->
+<section style="background:#f5f7fa;">
+    <div class="section-inner">
+        <h2>Abstract</h2>
+        <div class="section-line"></div>
+        <div class="abstract-box">
+            Simultaneous Localization and Mapping (SLAM) is a fundamental capability for autonomous robotic systems
+            operating in complex and large-scale environments. The geomagnetic field—despite being globally available,
+            infrastructure-free, and inherently absolute in orientation—remains largely absent from robotics-oriented
+            SLAM benchmarks. To address this gap, we introduce the <strong>Mag4D Dataset</strong>, a multi-modal
+            geomagnetic benchmark specifically designed for magnetic-aware localization and mapping research.
+            The dataset provides time-synchronized measurements from LiDAR, camera, IMU, tri-axis magnetometer,
+            and GPS sensors, together with LiDAR–IMU-based ground truth alignment.
+            Unlike prior magnetic datasets that focus primarily on indoor anomaly localization, Mag4D emphasizes
+            <em>structured geometric trajectories</em> including circular and rectangular paths recorded across
+            seven repeated traversals of identical routes—enabling quantitative evaluation of global yaw drift,
+            cross-session heading consistency, magnetic map stability, and alignment error under identical spatial
+            constraints. The dataset includes both daytime and nighttime recordings on the DGIST campus,
+            providing a controlled yet realistic outdoor benchmark for multi-modal SLAM evaluation.
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ HIGHLIGHTS ══ -->
+<section style="background:white;">
+    <div class="section-inner">
+        <h2>Key Contributions</h2>
+        <div class="section-line"></div>
+        <div class="highlights-grid">
+            <div class="highlight-card">
+                <div class="highlight-icon">🧲</div>
+                <h3>4D Geomagnetic Sensing</h3>
+                <p>Continuous tri-axis magnetic field measurements (M<sub>x</sub>, M<sub>y</sub>, M<sub>z</sub>) captured as a function of time along spatial trajectories, enabling joint spatial–temporal magnetic field analysis.</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">🔁</div>
+                <h3>Repeated-Traversal Design</h3>
+                <p>Seven sequences recorded over identical paths enable systematic investigation of magnetic repeatability, heading-dependent variation at identical spatial locations, and the quantitative impact of geomagnetic cues on yaw drift mitigation.</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">🌗</div>
+                <h3>Day & Night Conditions</h3>
+                <p>Paired daytime and nighttime sessions allow controlled analysis of heading robustness under illumination transitions—a scenario absent from existing magnetic-aware benchmarks.</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">📍</div>
+                <h3>High-Accuracy Ground Truth</h3>
+                <p>Precise 6-DoF ground truth poses generated by registering LiDAR scans against a high-accuracy reference map via ICP, with static validation showing standard deviation below 3 cm.</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">🏗️</div>
+                <h3>Structured Geometric Trajectories</h3>
+                <p>Circular and rectangular paths with mild elevation changes around the DGIST campus provide structured outdoor benchmarking suited for global heading and loop-closure evaluation.</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">📡</div>
+                <h3>Full Multi-Modal Synchronization</h3>
+                <p>Hardware-synchronized LiDAR, camera, IMU, magnetometer, and GPS streams timestamped to a common system clock, with temporal offsets calibrated by minimizing angular velocity residuals.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ STATS ══ -->
+<section style="background:#f5f7fa;">
+    <div class="section-inner">
+        <h2>Dataset at a Glance</h2>
+        <div class="section-line"></div>
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-value">7</span>
+                <span class="stat-label">Sequences</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">~1.3 km</span>
+                <span class="stat-label">Avg. Path Length</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">5</span>
+                <span class="stat-label">Sensor Modalities</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">Day+<br>Night</span>
+                <span class="stat-label">Lighting Conditions</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">200 Hz</span>
+                <span class="stat-label">IMU Rate</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">6-DoF</span>
+                <span class="stat-label">Ground Truth</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ SENSOR SUITE ══ -->
+<section style="background:white;">
+    <div class="section-inner">
+        <h2>Sensor Suite</h2>
+        <div class="section-line"></div>
+        <table class="sensor-table">
+            <thead>
+                <tr>
+                    <th>Sensor</th>
+                    <th>Model</th>
+                    <th>Rate</th>
+                    <th>Specifications</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>📷 Camera</td>
+                    <td>Gemini 336L</td>
+                    <td><span class="sensor-badge">30 Hz</span></td>
+                    <td>Depth 1280×800, H90°/V65°; RGB 1280×800, H94°/V68°</td>
+                </tr>
+                <tr>
+                    <td>🔵 LiDAR</td>
+                    <td>Mid-360</td>
+                    <td><span class="sensor-badge">10 Hz</span></td>
+                    <td>360°/59° FOV; 200k pts/s; 70 m range</td>
+                </tr>
+                <tr>
+                    <td>📐 IMU</td>
+                    <td>Mid-360 (built-in)</td>
+                    <td><span class="sensor-badge">200 Hz</span></td>
+                    <td>3-axis Gyroscope; 3-axis Accelerometer</td>
+                </tr>
+                <tr>
+                    <td>🧲 Magnetometer</td>
+                    <td>3DM-GX5-AHRS</td>
+                    <td><span class="sensor-badge">100 Hz</span></td>
+                    <td>3-axis; ±8 Gauss; Temperature compensated</td>
+                </tr>
+                <tr>
+                    <td>🛰️ GPS</td>
+                    <td>EVK-F9P</td>
+                    <td><span class="sensor-badge">1 Hz</span></td>
+                    <td>Multi-band RTK GNSS (GPS/GLONASS/Galileo/BeiDou); ~1 cm + 1 ppm accuracy</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+<!-- ══ SEQUENCES ══ -->
+<section style="background:#f5f7fa;">
+    <div class="section-inner">
+        <h2>Sequences</h2>
+        <div class="section-line"></div>
+        <p style="text-align:center; color:#718096; margin-bottom:32px; font-size:0.95em;">
+            7 sequences recorded over repeated traversals of identical paths — enabling cross-session magnetic consistency analysis
+        </p>
+        <div class="seq-grid">
+            <div class="seq-card">
+                <div class="seq-header">
+                    <span class="seq-icon">☀️</span>
+                    <span class="seq-name">seq01_day_circle</span>
+                </div>
+                <div class="seq-meta">
+                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
+                </div>
+                <span class="tag tag-day">Day</span>
+                <span class="tag tag-circle">Circle</span>
+            </div>
+            <div class="seq-card">
+                <div class="seq-header">
+                    <span class="seq-icon">🌙</span>
+                    <span class="seq-name">seq02_night_circle</span>
+                </div>
+                <div class="seq-meta">
+                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
+                </div>
+                <span class="tag tag-night">Night</span>
+                <span class="tag tag-circle">Circle</span>
+            </div>
+            <div class="seq-card">
+                <div class="seq-header">
+                    <span class="seq-icon">☀️</span>
+                    <span class="seq-name">seq03_day_circle_2</span>
+                </div>
+                <div class="seq-meta">
+                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
+                </div>
+                <span class="tag tag-day">Day</span>
+                <span class="tag tag-circle">Circle</span>
+            </div>
+            <div class="seq-card">
+                <div class="seq-header">
+                    <span class="seq-icon">🌙</span>
+                    <span class="seq-name">seq04_night_circle_2</span>
+                </div>
+                <div class="seq-meta">
+                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
+                </div>
+                <span class="tag tag-night">Night</span>
+                <span class="tag tag-circle">Circle</span>
+            </div>
+            <div class="seq-card">
+                <div class="seq-header">
+                    <span class="seq-icon">☀️</span>
+                    <span class="seq-name">seq05_day_rect</span>
+                </div>
+                <div class="seq-meta">
+                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
+                </div>
+                <span class="tag tag-day">Day</span>
+                <span class="tag tag-rect">Rectangle</span>
+            </div>
+            <div class="seq-card">
+                <div class="seq-header">
+                    <span class="seq-icon">🌙</span>
+                    <span class="seq-name">seq06_night_rect</span>
+                </div>
+                <div class="seq-meta">
+                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
+                </div>
+                <span class="tag tag-night">Night</span>
+                <span class="tag tag-rect">Rectangle</span>
+            </div>
+            <div class="seq-card">
+                <div class="seq-header">
+                    <span class="seq-icon">☀️</span>
+                    <span class="seq-name">seq07_day_library</span>
+                </div>
+                <div class="seq-meta">
+                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
+                </div>
+                <span class="tag tag-day">Day</span>
+                <span class="tag tag-circle">Campus Library</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ COMPARISON ══ -->
+<section style="background:white;">
+    <div class="section-inner">
+        <h2>Comparison with Existing Datasets</h2>
+        <div class="section-line"></div>
+        <table class="compare-table">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Dataset</th>
+                    <th>Seq.</th>
+                    <th>Avg. Length</th>
+                    <th>Mag.</th>
+                    <th>Day/Night</th>
+                    <th>Precise GT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2012</td><td>KITTI</td><td>22</td><td>~2 km</td>
+                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>2016</td><td>EuRoC</td><td>11</td><td>~80 m</td>
+                    <td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>2017</td><td>RobotCar</td><td>100+</td><td>~10 km</td>
+                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>2017</td><td>MagPIE</td><td>10</td><td>~500 m</td>
+                    <td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>2018</td><td>TUM VI</td><td>28</td><td>~200 m</td>
+                    <td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>2020</td><td>Newer College</td><td>4</td><td>~1.5 km</td>
+                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>2021</td><td>MagWi</td><td>100+</td><td>Indoor multi-floor</td>
+                    <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td>
+                </tr>
+                <tr>
+                    <td>2023</td><td>Boreas</td><td>40+</td><td>~8 km</td>
+                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td>2025</td><td>GrandTour</td><td>49</td><td>>10 km</td>
+                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+                </tr>
+                <tr class="ours">
+                    <td>2026</td><td>Mag4D (Ours)</td><td>7</td><td>~1.3 km</td>
+                    <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+<!-- ══ DATA FORMAT ══ -->
+<section style="background:#f5f7fa;">
+    <div class="section-inner">
+        <h2>Data Format</h2>
+        <div class="section-line"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start;">
+
+            <!-- File tree -->
+            <div>
+                <h3 style="font-size:1.05em; color:#0f2027; margin-bottom:14px;">Directory Structure</h3>
+                <div class="file-tree">
+<span class="dir">Mag4D/</span>
+  <span class="dir">├── seq01_day_circle/</span>
+  │   <span class="file">├── raw.bag</span>       <span class="comment"># All ROS topics</span>
+  │   <span class="file">├── imu.csv</span>       <span class="comment"># IMU data</span>
+  │   <span class="file">├── mag.csv</span>       <span class="comment"># Magnetic field</span>
+  │   <span class="file">├── gps.csv</span>       <span class="comment"># GPS positions</span>
+  │   <span class="file">├── gt_pose.csv</span>   <span class="comment"># Ground truth</span>
+  │   <span class="file">├── map.pcd</span>       <span class="comment"># Global LiDAR map</span>
+  │   <span class="dir">├── lidar/</span>        <span class="comment"># Point clouds</span>
+  │   <span class="dir">└── images/</span>       <span class="comment"># Camera frames</span>
+  <span class="dir">├── seq02_night_circle/</span>
+  │   <span class="file">└── ...</span>
+  <span class="dir">└── ...</span>
+                </div>
+            </div>
+
+            <!-- ROS Topics -->
+            <div>
+                <h3 style="font-size:1.05em; color:#0f2027; margin-bottom:14px;">ROS Topics</h3>
+                <div class="topic-grid" style="grid-template-columns:1fr;">
+                    <div class="topic-card">
+                        <span class="topic-name">/imu/data</span>
+                        <span class="topic-desc">Linear acceleration and angular velocity</span>
+                    </div>
+                    <div class="topic-card">
+                        <span class="topic-name">/imu/mag</span>
+                        <span class="topic-desc">Tri-axis magnetic field (M<sub>x</sub>, M<sub>y</sub>, M<sub>z</sub>) in µT</span>
+                    </div>
+                    <div class="topic-card">
+                        <span class="topic-name">/lidar/points</span>
+                        <span class="topic-desc">3D LiDAR point clouds (PCD format)</span>
+                    </div>
+                    <div class="topic-card">
+                        <span class="topic-name">/camera/image_raw</span>
+                        <span class="topic-desc">Monocular RGB images</span>
+                    </div>
+                    <div class="topic-card">
+                        <span class="topic-name">/gps/fix</span>
+                        <span class="topic-desc">RTK GPS position measurements</span>
+                    </div>
+                    <div class="topic-card">
+                        <span class="topic-name">/tf</span>
+                        <span class="topic-desc">Coordinate frame transformations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ CITATION ══ -->
+<section style="background:white;">
+    <div class="section-inner">
+        <h2>Citation</h2>
+        <div class="section-line"></div>
+        <div class="bibtex">
+            <button class="copy-btn" onclick="copyBib()">Copy</button>
+<pre id="bib-content">@inproceedings{nayak2026mag4d,
+  title     = {Mag4D-SLAM Dataset: A Repeated-Traversal Multi-Modal
+               4D Geomagnetic Dataset for Localization and Mapping},
+  author    = {Nayak, Bibhutibhusan and Ju, Hyoseok and Kim, Giseop},
+  booktitle = {Proceedings of the IEEE/RSJ International Conference on
+               Intelligent Robots and Systems (IROS)},
+  year      = {2026}
+}</pre>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ FOOTER ══ -->
+<footer>
+    <p>© 2026 Autonomy and Perceptual Robotics Lab (APRL) · DGIST · All rights reserved.</p>
+    <p style="margin-top:8px;">
+        <a href="#">GitHub</a> &nbsp;|&nbsp;
+        <a href="https://sites.google.com/view/aprl-dgist">APRL Lab</a>
+    </p>
+</footer>
+
+<script>
+    function copyBib() {
+        const text = document.getElementById('bib-content').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    }
+</script>
+
+</body>
+</html>
