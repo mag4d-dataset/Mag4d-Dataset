@@ -304,53 +304,58 @@
         }
 
         /* ── Sequences ── */
-        .seq-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-            gap: 18px;
-        }
-
-        .seq-card {
-            background: white;
-            border: 1px solid #e2e8f0;
+        .seq-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92em;
             border-radius: 12px;
-            padding: 22px 20px;
-            transition: all 0.25s;
+            overflow: hidden;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
         }
 
-        .seq-card:hover {
-            border-color: #00d2b4;
-            box-shadow: 0 4px 20px rgba(0,210,180,0.12);
-            transform: translateY(-2px);
+        .seq-table thead tr {
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: white;
         }
 
-        .seq-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
+        .seq-table th {
+            padding: 13px 16px;
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: 0.02em;
         }
 
-        .seq-icon {
-            font-size: 1.5em;
+        .seq-table tbody tr {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.15s;
         }
 
-        .seq-name {
-            font-size: 0.95em;
+        .seq-table tbody tr:hover { background: #f0fafa; }
+
+        .seq-table td {
+            padding: 11px 16px;
+            color: #2d3748;
+            vertical-align: middle;
+        }
+
+        .seq-table td:first-child {
+            font-family: 'Courier New', monospace;
+            font-size: 0.88em;
             font-weight: 700;
             color: #0f2027;
         }
 
-        .seq-meta {
-            font-size: 0.82em;
-            color: #718096;
-            line-height: 1.7;
-        }
-
-        .seq-meta span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .seq-group td {
+            background: #f8faff;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            font-size: 0.78em;
+            font-weight: 700;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-top: 2px solid #e2e8f0;
         }
 
         .tag {
@@ -359,13 +364,19 @@
             border-radius: 8px;
             font-size: 0.73em;
             font-weight: 600;
-            margin-top: 8px;
+            margin-right: 4px;
         }
 
         .tag-day { background: #fef3c7; color: #92400e; }
         .tag-night { background: #e0e7ff; color: #3730a3; }
         .tag-circle { background: #d1fae5; color: #065f46; }
         .tag-rect { background: #fce7f3; color: #9d174d; }
+        .tag-campus { background: #dbeafe; color: #1e40af; }
+        .tag-library { background: #ede9fe; color: #5b21b6; }
+        .tag-campus-circle { background: #cffafe; color: #155e75; }
+        .tag-fwd { background: #dcfce7; color: #166534; }
+        .tag-rev { background: #fee2e2; color: #991b1b; }
+        .tag-fwdrev { background: #fef9c3; color: #713f12; }
 
         /* ── Comparison Table ── */
         .compare-table {
@@ -527,10 +538,13 @@
     <p class="subtitle">The first robotics-oriented benchmark for geomagnetic-aware SLAM with structured repeated-traversal trajectories</p>
 
     <div class="authors">
-        <a href="#">Anonymous authors</a>
+        <a href="https://scholar.google.com/citations?user=8MGOSscAAAAJ&hl=en" target="_blank">Bibhutibhusan Nayak</a><sup>*</sup>
+        <a href="https://scholar.google.com/citations?user=aYXHS9oAAAAJ&hl=ko" target="_blank">Hyoseok Ju</a><sup>*</sup>
+        <a href="https://scholar.google.com/citations?user=9mKOLX8AAAAJ&hl=ko" target="_blank">Giseop Kim</a><sup>†</sup>
     </div>
     <div class="affiliation">
-        <sup>1</sup>Anonymous Institution
+        Daegu Gyeongbuk Institute of Science and Technology (DGIST)<br>
+        <sup>*</sup>Co-first authors &nbsp;·&nbsp; <sup>†</sup>Corresponding author
     </div>
 
     <div class="btn-group">
@@ -615,12 +629,12 @@
         <div class="section-line"></div>
         <div class="stats-row">
             <div class="stat-card">
-                <span class="stat-value">7</span>
+                <span class="stat-value">14</span>
                 <span class="stat-label">Sequences</span>
             </div>
             <div class="stat-card">
-                <span class="stat-value">~1.3 km</span>
-                <span class="stat-label">Avg. Path Length</span>
+                <span class="stat-value">>18 km</span>
+                <span class="stat-label">Total Path Length</span>
             </div>
             <div class="stat-card">
                 <span class="stat-value">5</span>
@@ -686,7 +700,7 @@
                     <td>🛰️ GPS</td>
                     <td>EVK-F9P</td>
                     <td><span class="sensor-badge">1 Hz</span></td>
-                    <td>Multi-band GNSS (GPS/GLONASS/Galileo/BeiDou); ~1 cm + 1 ppm accuracy</td>
+                    <td>Multi-band GNSS receiver; Operated in standalone mode (~meter-level accuracy)</td>
                 </tr>
             </tbody>
         </table>
@@ -700,87 +714,43 @@
         <h2>Sequences</h2>
         <div class="section-line"></div>
         <p style="text-align:center; color:#718096; margin-bottom:32px; font-size:0.95em;">
-            7 sequences recorded over repeated traversals of identical paths — enabling cross-session magnetic consistency analysis
+            14 sequences · 3 environments · day &amp; night · forward &amp; reverse traversals
         </p>
-        <div class="seq-grid">
-            <div class="seq-card">
-                <div class="seq-header">
-                    <span class="seq-icon">☀️</span>
-                    <span class="seq-name">seq01_day_circle</span>
-                </div>
-                <div class="seq-meta">
-                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
-                </div>
-                <span class="tag tag-day">Day</span>
-                <span class="tag tag-circle">Circle</span>
-            </div>
-            <div class="seq-card">
-                <div class="seq-header">
-                    <span class="seq-icon">🌙</span>
-                    <span class="seq-name">seq02_night_circle</span>
-                </div>
-                <div class="seq-meta">
-                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
-                </div>
-                <span class="tag tag-night">Night</span>
-                <span class="tag tag-circle">Circle</span>
-            </div>
-            <div class="seq-card">
-                <div class="seq-header">
-                    <span class="seq-icon">☀️</span>
-                    <span class="seq-name">seq03_day_circle_2</span>
-                </div>
-                <div class="seq-meta">
-                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
-                </div>
-                <span class="tag tag-day">Day</span>
-                <span class="tag tag-circle">Circle</span>
-            </div>
-            <div class="seq-card">
-                <div class="seq-header">
-                    <span class="seq-icon">🌙</span>
-                    <span class="seq-name">seq04_night_circle_2</span>
-                </div>
-                <div class="seq-meta">
-                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
-                </div>
-                <span class="tag tag-night">Night</span>
-                <span class="tag tag-circle">Circle</span>
-            </div>
-            <div class="seq-card">
-                <div class="seq-header">
-                    <span class="seq-icon">☀️</span>
-                    <span class="seq-name">seq05_day_rect</span>
-                </div>
-                <div class="seq-meta">
-                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
-                </div>
-                <span class="tag tag-day">Day</span>
-                <span class="tag tag-rect">Rectangle</span>
-            </div>
-            <div class="seq-card">
-                <div class="seq-header">
-                    <span class="seq-icon">🌙</span>
-                    <span class="seq-name">seq06_night_rect</span>
-                </div>
-                <div class="seq-meta">
-                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
-                </div>
-                <span class="tag tag-night">Night</span>
-                <span class="tag tag-rect">Rectangle</span>
-            </div>
-            <div class="seq-card">
-                <div class="seq-header">
-                    <span class="seq-icon">☀️</span>
-                    <span class="seq-name">seq07_day_library</span>
-                </div>
-                <div class="seq-meta">
-                    <span>🔵 LiDAR · 📷 Camera · 🧲 Mag · 📐 IMU · 🛰️ GPS</span>
-                </div>
-                <span class="tag tag-day">Day</span>
-                <span class="tag tag-circle">Campus Library</span>
-            </div>
-        </div>
+        <table class="seq-table">
+            <thead>
+                <tr>
+                    <th>Sequence</th>
+                    <th>Env.</th>
+                    <th>Light</th>
+                    <th>Direction</th>
+                    <th>Path (m)</th>
+                    <th>Duration (s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="seq-group"><td colspan="6">Campus</td></tr>
+                <tr><td>campus_day_fwd_01</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1382.9</td><td>1203.8</td></tr>
+                <tr><td>campus_day_fwd_04</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1554.1</td><td>1291.9</td></tr>
+                <tr><td>campus_day_fwd_08</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1465.6</td><td>1181.2</td></tr>
+                <tr><td>campus_day_fwd_09</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1443.6</td><td>1132.3</td></tr>
+                <tr><td>campus_day_rev_05</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-rev">← Rev</span></td><td>1637.2</td><td>1299.1</td></tr>
+                <tr><td>campus_day_rev_07</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-rev">← Rev</span></td><td>1605.3</td><td>1234.9</td></tr>
+                <tr><td>campus_night_fwd_00</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-night">🌙 Night</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1376.6</td><td>1117.3</td></tr>
+                <tr><td>campus_night_rev_11</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-night">🌙 Night</span></td><td><span class="tag tag-rev">← Rev</span></td><td>1527.3</td><td>1224.4</td></tr>
+
+                <tr class="seq-group"><td colspan="6">Circle</td></tr>
+                <tr><td>circle_day_fwd_rev_02</td><td><span class="tag tag-circle">Circle</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td><td>1119.1</td><td>822.1</td></tr>
+                <tr><td>circle_day_fwd_rev_06</td><td><span class="tag tag-circle">Circle</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td><td>987.5</td><td>763.0</td></tr>
+                <tr><td>circle_day_fwd_rev_10</td><td><span class="tag tag-circle">Circle</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td><td>1402.8</td><td>993.2</td></tr>
+                <tr><td>circle_night_fwd_rev_00</td><td><span class="tag tag-circle">Circle</span></td><td><span class="tag tag-night">🌙 Night</span></td><td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td><td>1064.4</td><td>816.9</td></tr>
+
+                <tr class="seq-group"><td colspan="6">Library</td></tr>
+                <tr><td>library_day_fwd_03</td><td><span class="tag tag-library">Library</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>189.5</td><td>163.3</td></tr>
+
+                <tr class="seq-group"><td colspan="6">Campus + Circle</td></tr>
+                <tr><td>campus_circle_night_rev_12</td><td><span class="tag tag-campus-circle">Campus+Circle</span></td><td><span class="tag tag-night">🌙 Night</span></td><td><span class="tag tag-rev">← Rev</span></td><td>1676.0</td><td>1406.2</td></tr>
+            </tbody>
+        </table>
     </div>
 </section>
 
@@ -860,21 +830,27 @@
             <!-- File tree -->
             <div>
                 <h3 style="font-size:1.05em; color:#0f2027; margin-bottom:14px;">Directory Structure</h3>
-                <div class="file-tree">
+                <div class="file-tree"><pre>
 <span class="dir">Mag4D/</span>
-  <span class="dir">├── seq01_day_circle/</span>
-  │   <span class="file">├── raw.bag</span>       <span class="comment"># All ROS topics</span>
-  │   <span class="file">├── imu.csv</span>       <span class="comment"># IMU data</span>
-  │   <span class="file">├── mag.csv</span>       <span class="comment"># Magnetic field</span>
-  │   <span class="file">├── gps.csv</span>       <span class="comment"># GPS positions</span>
-  │   <span class="file">├── gt_pose.csv</span>   <span class="comment"># Ground truth</span>
-  │   <span class="file">├── map.pcd</span>       <span class="comment"># Global LiDAR map</span>
-  │   <span class="dir">├── lidar/</span>        <span class="comment"># Point clouds</span>
-  │   <span class="dir">└── images/</span>       <span class="comment"># Camera frames</span>
-  <span class="dir">├── seq02_night_circle/</span>
-  │   <span class="file">└── ...</span>
-  <span class="dir">└── ...</span>
-                </div>
+├── <span class="dir">campus_day_fwd_01/</span>
+│   ├── <span class="file">raw.bag</span>      <span class="comment"># All ROS topics</span>
+│   ├── <span class="file">imu.csv</span>      <span class="comment"># IMU data</span>
+│   ├── <span class="file">mag.csv</span>      <span class="comment"># Magnetic field</span>
+│   ├── <span class="file">gps.csv</span>      <span class="comment"># GPS positions</span>
+│   ├── <span class="file">gt_pose.csv</span>  <span class="comment"># Ground truth poses</span>
+│   ├── <span class="file">map.pcd</span>      <span class="comment"># Global LiDAR map</span>
+│   ├── <span class="dir">lidar/</span>       <span class="comment"># Point clouds</span>
+│   └── <span class="dir">images/</span>      <span class="comment"># Camera frames</span>
+├── <span class="dir">campus_day_fwd_04/</span>
+│   └── <span class="file">...</span>
+├── <span class="dir">campus_night_fwd_00/</span>
+│   └── <span class="file">...</span>
+├── <span class="dir">circle_day_fwd_rev_02/</span>
+│   └── <span class="file">...</span>
+├── <span class="dir">library_day_fwd_03/</span>
+│   └── <span class="file">...</span>
+└── <span class="file">...</span>              <span class="comment"># 14 sequences total</span>
+</pre></div>
             </div>
 
             <!-- ROS Topics -->
