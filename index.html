@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mag4D-SLAM Dataset</title>
-    <meta name="description" content="A Repeated-Traversal Multi-Modal 4D Geomagnetic Dataset for Localization and Mapping">
+    <meta name="description"
+        content="A Repeated-Traversal Multi-Modal 4D Geomagnetic Dataset for Localization and Mapping">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
@@ -30,11 +36,14 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at 20% 50%, rgba(0,200,180,0.12) 0%, transparent 60%),
-                        radial-gradient(ellipse at 80% 30%, rgba(0,150,255,0.10) 0%, transparent 55%);
+            background: radial-gradient(ellipse at 20% 50%, rgba(0, 200, 180, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 30%, rgba(0, 150, 255, 0.10) 0%, transparent 55%);
         }
 
-        header > * { position: relative; z-index: 1; }
+        header>* {
+            position: relative;
+            z-index: 1;
+        }
 
         .venue-badge {
             display: inline-block;
@@ -57,7 +66,9 @@
             margin: 0 auto 12px;
         }
 
-        h1 span.accent { color: #00d2b4; }
+        h1 span.accent {
+            color: #00d2b4;
+        }
 
         .subtitle {
             font-size: 1.15em;
@@ -75,13 +86,18 @@
             color: #7dd3f5;
             text-decoration: none;
             margin: 0 6px;
-            border-bottom: 1px solid rgba(125,211,245,0.3);
+            border-bottom: 1px solid rgba(125, 211, 245, 0.3);
             transition: border-color 0.2s;
         }
 
-        .authors a:hover { border-bottom-color: #7dd3f5; }
+        .authors a:hover {
+            border-bottom-color: #7dd3f5;
+        }
 
-        .authors sup { font-size: 0.7em; margin-left: 1px; }
+        .authors sup {
+            font-size: 0.7em;
+            margin-left: 1px;
+        }
 
         .affiliation {
             font-size: 0.88em;
@@ -118,18 +134,18 @@
         .btn-primary:hover {
             background: #00f0ce;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,210,180,0.35);
+            box-shadow: 0 6px 20px rgba(0, 210, 180, 0.35);
         }
 
         .btn-outline {
             background: transparent;
             color: white;
-            border: 1.5px solid rgba(255,255,255,0.4);
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
         }
 
         .btn-outline:hover {
             border-color: white;
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             transform: translateY(-2px);
         }
 
@@ -199,7 +215,7 @@
 
         .highlight-card:hover {
             border-color: #00d2b4;
-            box-shadow: 0 6px 24px rgba(0,210,180,0.12);
+            box-shadow: 0 6px 24px rgba(0, 210, 180, 0.12);
             transform: translateY(-3px);
         }
 
@@ -234,7 +250,7 @@
             border-radius: 14px;
             padding: 28px 20px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(15,32,39,0.2);
+            box-shadow: 0 4px 20px rgba(15, 32, 39, 0.2);
         }
 
         .stat-value {
@@ -258,7 +274,7 @@
             font-size: 0.95em;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
         }
 
         .sensor-table thead tr {
@@ -279,7 +295,9 @@
             transition: background 0.15s;
         }
 
-        .sensor-table tbody tr:hover { background: #f0fafa; }
+        .sensor-table tbody tr:hover {
+            background: #f0fafa;
+        }
 
         .sensor-table td {
             padding: 13px 18px;
@@ -294,9 +312,9 @@
 
         .sensor-badge {
             display: inline-block;
-            background: rgba(0,210,180,0.12);
+            background: rgba(0, 210, 180, 0.12);
             color: #007a6e;
-            border: 1px solid rgba(0,210,180,0.3);
+            border: 1px solid rgba(0, 210, 180, 0.3);
             padding: 2px 10px;
             border-radius: 10px;
             font-size: 0.78em;
@@ -310,7 +328,7 @@
             font-size: 0.92em;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
         }
 
         .seq-table thead tr {
@@ -331,7 +349,9 @@
             transition: background 0.15s;
         }
 
-        .seq-table tbody tr:hover { background: #f0fafa; }
+        .seq-table tbody tr:hover {
+            background: #f0fafa;
+        }
 
         .seq-table td {
             padding: 11px 16px;
@@ -367,16 +387,55 @@
             margin-right: 4px;
         }
 
-        .tag-day { background: #fef3c7; color: #92400e; }
-        .tag-night { background: #e0e7ff; color: #3730a3; }
-        .tag-circle { background: #d1fae5; color: #065f46; }
-        .tag-rect { background: #fce7f3; color: #9d174d; }
-        .tag-campus { background: #dbeafe; color: #1e40af; }
-        .tag-library { background: #ede9fe; color: #5b21b6; }
-        .tag-campus-circle { background: #cffafe; color: #155e75; }
-        .tag-fwd { background: #dcfce7; color: #166534; }
-        .tag-rev { background: #fee2e2; color: #991b1b; }
-        .tag-fwdrev { background: #fef9c3; color: #713f12; }
+        .tag-day {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .tag-night {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .tag-circle {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .tag-rect {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+
+        .tag-campus {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .tag-library {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .tag-campus-circle {
+            background: #cffafe;
+            color: #155e75;
+        }
+
+        .tag-fwd {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .tag-rev {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tag-fwdrev {
+            background: #fef9c3;
+            color: #713f12;
+        }
 
         /* ── Comparison Table ── */
         .compare-table {
@@ -385,7 +444,7 @@
             font-size: 0.9em;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
         }
 
         .compare-table thead tr {
@@ -400,7 +459,9 @@
         }
 
         .compare-table th:first-child,
-        .compare-table th:nth-child(2) { text-align: left; }
+        .compare-table th:nth-child(2) {
+            text-align: left;
+        }
 
         .compare-table tbody tr {
             background: white;
@@ -413,9 +474,13 @@
             font-weight: 700;
         }
 
-        .compare-table tbody tr.ours td:nth-child(2) { color: #007a6e; }
+        .compare-table tbody tr.ours td:nth-child(2) {
+            color: #007a6e;
+        }
 
-        .compare-table tbody tr:hover { background: #f7faff; }
+        .compare-table tbody tr:hover {
+            background: #f7faff;
+        }
 
         .compare-table td {
             padding: 11px 14px;
@@ -424,10 +489,19 @@
         }
 
         .compare-table td:first-child,
-        .compare-table td:nth-child(2) { text-align: left; }
+        .compare-table td:nth-child(2) {
+            text-align: left;
+        }
 
-        .check { color: #00b894; font-size: 1.1em; }
-        .cross { color: #e74c3c; font-size: 1.1em; }
+        .check {
+            color: #00b894;
+            font-size: 1.1em;
+        }
+
+        .cross {
+            color: #e74c3c;
+            font-size: 1.1em;
+        }
 
         /* ── File Structure ── */
         .file-tree {
@@ -441,9 +515,18 @@
             overflow-x: auto;
         }
 
-        .file-tree .dir { color: #00d2b4; font-weight: 600; }
-        .file-tree .file { color: #a8d8cf; }
-        .file-tree .comment { color: #4a6a62; }
+        .file-tree .dir {
+            color: #00d2b4;
+            font-weight: 600;
+        }
+
+        .file-tree .file {
+            color: #a8d8cf;
+        }
+
+        .file-tree .comment {
+            color: #4a6a62;
+        }
 
         /* ── ROS Topics ── */
         .topic-grid {
@@ -467,7 +550,7 @@
             font-size: 0.83em;
             font-weight: 700;
             color: #007a6e;
-            background: rgba(0,210,180,0.08);
+            background: rgba(0, 210, 180, 0.08);
             padding: 2px 8px;
             border-radius: 6px;
             white-space: nowrap;
@@ -507,330 +590,519 @@
             transition: background 0.2s;
         }
 
-        .copy-btn:hover { background: #00f0ce; }
+        .copy-btn:hover {
+            background: #00f0ce;
+        }
 
         /* ── Footer ── */
         footer {
             background: #0f2027;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
             text-align: center;
             padding: 36px 20px;
             font-size: 0.9em;
         }
 
-        footer a { color: #00d2b4; text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
+        footer a {
+            color: #00d2b4;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
 
         /* ── Responsive ── */
         @media (max-width: 768px) {
-            h1 { font-size: 1.9em; }
-            h2 { font-size: 1.5em; }
-            .abstract-box { padding: 22px 20px; }
+            h1 {
+                font-size: 1.9em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .abstract-box {
+                padding: 22px 20px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<!-- ══ HEADER ══ -->
-<header>
-    <div class="venue-badge">IROS 2026</div>
-    <h1><span class="accent">Mag4D</span>-SLAM Dataset:<br>A Repeated-Traversal Multi-Modal<br>4D Geomagnetic Dataset for Localization and Mapping</h1>
-    <p class="subtitle">The first robotics-oriented benchmark for geomagnetic-aware SLAM with structured repeated-traversal trajectories</p>
+    <!-- ══ HEADER ══ -->
+    <header>
+        <div class="venue-badge">IROS 2026</div>
+        <h1><span class="accent">Mag4D</span>-SLAM Dataset:<br>A Repeated-Traversal Multi-Modal<br>4D Geomagnetic
+            Dataset for Localization and Mapping</h1>
+        <p class="subtitle">The first robotics-oriented benchmark for geomagnetic-aware SLAM with structured
+            repeated-traversal trajectories</p>
 
-    <div class="authors">
-        <a href="https://scholar.google.com/citations?user=8MGOSscAAAAJ&hl=en" target="_blank">Bibhutibhusan Nayak</a><sup>*</sup>
-        <a href="https://scholar.google.com/citations?user=aYXHS9oAAAAJ&hl=ko" target="_blank">Hyoseok Ju</a><sup>*</sup>
-        <a href="https://scholar.google.com/citations?user=9mKOLX8AAAAJ&hl=ko" target="_blank">Giseop Kim</a><sup>†</sup>
-    </div>
-    <div class="affiliation">
-        Daegu Gyeongbuk Institute of Science and Technology (DGIST)<br>
-        <sup>*</sup>Co-first authors &nbsp;·&nbsp; <sup>†</sup>Corresponding author
-    </div>
-
-    <div class="btn-group">
-        <a href="#" class="btn btn-primary">📄 Paper</a>
-        <a href="#" class="btn btn-outline">💻 GitHub</a>
-        <!-- <a href="https://forms.gle/eNhDwFJyRjjiTNMk8" class="btn btn-outline">📥 Download Dataset</a> -->
-        <a href="#" class="btn btn-outline">📥 Download Dataset</a>
-
-    </div>
-</header>
-
-
-<!-- ══ ABSTRACT ══ -->
-<section style="background:#f5f7fa;">
-    <div class="section-inner">
-        <h2>Abstract</h2>
-        <div class="section-line"></div>
-        <div class="abstract-box">
-            Simultaneous Localization and Mapping (SLAM) is a fundamental capability for autonomous robotic systems
-            operating in complex and large-scale environments. The geomagnetic field—despite being globally available,
-            infrastructure-free, and inherently absolute in orientation—remains largely absent from robotics-oriented
-            SLAM benchmarks. To address this gap, we introduce the <strong>Mag4D Dataset</strong>, a multi-modal
-            geomagnetic benchmark specifically designed for magnetic-aware localization and mapping research.
-            The dataset provides time-synchronized measurements from LiDAR, camera, IMU, tri-axis magnetometer,
-            and GPS sensors, together with LiDAR–IMU-based ground truth alignment.
-            Unlike prior magnetic datasets that focus primarily on indoor anomaly localization, Mag4D emphasizes
-            <em>structured geometric trajectories</em> including circular and rectangular paths recorded across
-            seven repeated traversals of identical routes—enabling quantitative evaluation of global yaw drift,
-            cross-session heading consistency, magnetic map stability, and alignment error under identical spatial
-            constraints. The dataset includes both daytime and nighttime recordings on the campus,
-            providing a controlled yet realistic outdoor benchmark for multi-modal SLAM evaluation.
+        <div class="authors">
+            <a href="https://scholar.google.com/citations?user=8MGOSscAAAAJ&hl=en" target="_blank">Bibhutibhusan
+                Nayak</a><sup>*</sup>
+            <a href="https://scholar.google.com/citations?user=aYXHS9oAAAAJ&hl=ko" target="_blank">Hyoseok
+                Ju</a><sup>*</sup>
+            <a href="https://scholar.google.com/citations?user=9mKOLX8AAAAJ&hl=ko" target="_blank">Giseop
+                Kim</a><sup>†</sup>
         </div>
-    </div>
-</section>
+        <div class="affiliation">
+            Daegu Gyeongbuk Institute of Science and Technology (DGIST)<br>
+            <sup>*</sup>Co-first authors &nbsp;·&nbsp; <sup>†</sup>Corresponding author
+        </div>
+
+        <div class="btn-group">
+            <a href="https://arxiv.org/pdf/2607.21986" class="btn btn-primary" target="_blank">📄 Paper</a>
+            <a href="#" class="btn btn-outline">💻 GitHub</a>
+            <!-- <a href="https://forms.gle/eNhDwFJyRjjiTNMk8" class="btn btn-outline">📥 Download Dataset</a> -->
+            <a href="https://drive.google.com/drive/folders/1YgUxenHZjgz9bjAwdhSYjNauoHeONKDN?usp=drive_link" class="btn btn-outline" target="_blank">📥 Download Dataset</a>
+
+        </div>
+    </header>
 
 
-<!-- ══ HIGHLIGHTS ══ -->
-<section style="background:white;">
-    <div class="section-inner">
-        <h2>Key Contributions</h2>
-        <div class="section-line"></div>
-        <div class="highlights-grid">
-            <div class="highlight-card">
-                <div class="highlight-icon">🧲</div>
-                <h3>4D Geomagnetic Sensing</h3>
-                <p>Continuous tri-axis magnetic field measurements (M<sub>x</sub>, M<sub>y</sub>, M<sub>z</sub>) captured as a function of time along spatial trajectories, enabling joint spatial–temporal magnetic field analysis.</p>
-            </div>
-            <div class="highlight-card">
-                <div class="highlight-icon">🔁</div>
-                <h3>Repeated-Traversal Design</h3>
-                <p>Seven sequences recorded over identical paths enable systematic investigation of magnetic repeatability, heading-dependent variation at identical spatial locations, and the quantitative impact of geomagnetic cues on yaw drift mitigation.</p>
-            </div>
-            <div class="highlight-card">
-                <div class="highlight-icon">🌗</div>
-                <h3>Day & Night Conditions</h3>
-                <p>Paired daytime and nighttime sessions allow controlled analysis of heading robustness under illumination transitions—a scenario absent from existing magnetic-aware benchmarks.</p>
-            </div>
-            <div class="highlight-card">
-                <div class="highlight-icon">📍</div>
-                <h3>High-Accuracy Ground Truth</h3>
-                <p>Precise 6-DoF ground truth poses generated by registering LiDAR scans against a high-accuracy reference map via ICP, with static validation showing standard deviation below 3 cm.</p>
-            </div>
-            <div class="highlight-card">
-                <div class="highlight-icon">🏗️</div>
-                <h3>Structured Geometric Trajectories</h3>
-                <p>Circular and rectangular paths with mild elevation changes around the campus provide structured outdoor benchmarking suited for global heading and loop-closure evaluation.</p>
-            </div>
-            <div class="highlight-card">
-                <div class="highlight-icon">📡</div>
-                <h3>Full Multi-Modal Synchronization</h3>
-                <p>Hardware-synchronized LiDAR, camera, IMU, magnetometer, and GPS streams timestamped to a common system clock, with temporal offsets calibrated by minimizing angular velocity residuals.</p>
+    <!-- ══ ABSTRACT ══ -->
+    <section style="background:#f5f7fa;">
+        <div class="section-inner">
+            <h2>Abstract</h2>
+            <div class="section-line"></div>
+            <div class="abstract-box">
+                Simultaneous Localization and Mapping (SLAM) is a fundamental capability for autonomous robotic systems
+                operating in complex and large-scale environments. The geomagnetic field—despite being globally
+                available,
+                infrastructure-free, and inherently absolute in orientation—remains largely absent from
+                robotics-oriented
+                SLAM benchmarks. To address this gap, we introduce the <strong>Mag4D Dataset</strong>, a multi-modal
+                geomagnetic benchmark specifically designed for magnetic-aware localization and mapping research.
+                The dataset provides time-synchronized measurements from LiDAR, camera, IMU, tri-axis magnetometer,
+                and GPS sensors, together with LiDAR–IMU-based ground truth alignment.
+                Unlike prior magnetic datasets that focus primarily on indoor anomaly localization, Mag4D emphasizes
+                <em>structured geometric trajectories</em> including circular and rectangular paths recorded across
+                seven repeated traversals of identical routes—enabling quantitative evaluation of global yaw drift,
+                cross-session heading consistency, magnetic map stability, and alignment error under identical spatial
+                constraints. The dataset includes both daytime and nighttime recordings on the campus,
+                providing a controlled yet realistic outdoor benchmark for multi-modal SLAM evaluation.
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══ STATS ══ -->
-<section style="background:#f5f7fa;">
-    <div class="section-inner">
-        <h2>Dataset at a Glance</h2>
-        <div class="section-line"></div>
-        <div class="stats-row">
-            <div class="stat-card">
-                <span class="stat-value">14</span>
-                <span class="stat-label">Sequences</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-value">>18 km</span>
-                <span class="stat-label">Total Path Length</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-value">5</span>
-                <span class="stat-label">Sensor Modalities</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-value">Day+<br>Night</span>
-                <span class="stat-label">Lighting Conditions</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-value">200 Hz</span>
-                <span class="stat-label">IMU Rate</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-value">6-DoF</span>
-                <span class="stat-label">Ground Truth</span>
+    <!-- ══ HIGHLIGHTS ══ -->
+    <section style="background:white;">
+        <div class="section-inner">
+            <h2>Key Contributions</h2>
+            <div class="section-line"></div>
+            <div class="highlights-grid">
+                <div class="highlight-card">
+                    <div class="highlight-icon">🧲</div>
+                    <h3>4D Geomagnetic Sensing</h3>
+                    <p>Continuous tri-axis magnetic field measurements (M<sub>x</sub>, M<sub>y</sub>, M<sub>z</sub>)
+                        captured as a function of time along spatial trajectories, enabling joint spatial–temporal
+                        magnetic field analysis.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">🔁</div>
+                    <h3>Repeated-Traversal Design</h3>
+                    <p>Seven sequences recorded over identical paths enable systematic investigation of magnetic
+                        repeatability, heading-dependent variation at identical spatial locations, and the quantitative
+                        impact of geomagnetic cues on yaw drift mitigation.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">🌗</div>
+                    <h3>Day & Night Conditions</h3>
+                    <p>Paired daytime and nighttime sessions allow controlled analysis of heading robustness under
+                        illumination transitions—a scenario absent from existing magnetic-aware benchmarks.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">📍</div>
+                    <h3>High-Accuracy Ground Truth</h3>
+                    <p>Precise 6-DoF ground truth poses generated by registering LiDAR scans against a high-accuracy
+                        reference map via ICP, with static validation showing standard deviation below 3 cm.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">🏗️</div>
+                    <h3>Structured Geometric Trajectories</h3>
+                    <p>Circular and rectangular paths with mild elevation changes around the campus provide structured
+                        outdoor benchmarking suited for global heading and loop-closure evaluation.</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-icon">📡</div>
+                    <h3>Full Multi-Modal Synchronization</h3>
+                    <p>Hardware-synchronized LiDAR, camera, IMU, magnetometer, and GPS streams timestamped to a common
+                        system clock, with temporal offsets calibrated by minimizing angular velocity residuals.</p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══ SENSOR SUITE ══ -->
-<section style="background:white;">
-    <div class="section-inner">
-        <h2>Sensor Suite</h2>
-        <div class="section-line"></div>
-        <table class="sensor-table">
-            <thead>
-                <tr>
-                    <th>Sensor</th>
-                    <th>Model</th>
-                    <th>Rate</th>
-                    <th>Specifications</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>📷 Camera</td>
-                    <td>Gemini 336L</td>
-                    <td><span class="sensor-badge">30 Hz</span></td>
-                    <td>Depth 1280×800, H90°/V65°; RGB 1280×800, H94°/V68°</td>
-                </tr>
-                <tr>
-                    <td>🔵 LiDAR</td>
-                    <td>Mid-360</td>
-                    <td><span class="sensor-badge">10 Hz</span></td>
-                    <td>360°/59° FOV; 200k pts/s; 70 m range</td>
-                </tr>
-                <tr>
-                    <td>📐 IMU</td>
-                    <td>Mid-360 (built-in)</td>
-                    <td><span class="sensor-badge">200 Hz</span></td>
-                    <td>3-axis Gyroscope; 3-axis Accelerometer</td>
-                </tr>
-                <tr>
-                    <td>🧲 Magnetometer</td>
-                    <td>3DM-GX5-AHRS</td>
-                    <td><span class="sensor-badge">100 Hz</span></td>
-                    <td>3-axis; ±8 Gauss; Temperature compensated</td>
-                </tr>
-                <tr>
-                    <td>🛰️ GPS</td>
-                    <td>EVK-F9P</td>
-                    <td><span class="sensor-badge">1 Hz</span></td>
-                    <td>Multi-band GNSS receiver; Operated in standalone mode (~meter-level accuracy)</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</section>
+    <!-- ══ STATS ══ -->
+    <section style="background:#f5f7fa;">
+        <div class="section-inner">
+            <h2>Dataset at a Glance</h2>
+            <div class="section-line"></div>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-value">14</span>
+                    <span class="stat-label">Sequences</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">>18 km</span>
+                    <span class="stat-label">Total Path Length</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">5</span>
+                    <span class="stat-label">Sensor Modalities</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">Day+<br>Night</span>
+                    <span class="stat-label">Lighting Conditions</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">200 Hz</span>
+                    <span class="stat-label">IMU Rate</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">6-DoF</span>
+                    <span class="stat-label">Ground Truth</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
 
-<!-- ══ SEQUENCES ══ -->
-<section style="background:#f5f7fa;">
-    <div class="section-inner">
-        <h2>Sequences</h2>
-        <div class="section-line"></div>
-        <p style="text-align:center; color:#718096; margin-bottom:32px; font-size:0.95em;">
-            14 sequences · 3 environments · day &amp; night · forward &amp; reverse traversals
-        </p>
-        <table class="seq-table">
-            <thead>
-                <tr>
-                    <th>Sequence</th>
-                    <th>Env.</th>
-                    <th>Light</th>
-                    <th>Direction</th>
-                    <th>Path (m)</th>
-                    <th>Duration (s)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="seq-group"><td colspan="6">Campus</td></tr>
-                <tr><td>campus_day_fwd_01</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1382.9</td><td>1203.8</td></tr>
-                <tr><td>campus_day_fwd_04</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1554.1</td><td>1291.9</td></tr>
-                <tr><td>campus_day_fwd_08</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1465.6</td><td>1181.2</td></tr>
-                <tr><td>campus_day_fwd_09</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1443.6</td><td>1132.3</td></tr>
-                <tr><td>campus_day_rev_05</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-rev">← Rev</span></td><td>1637.2</td><td>1299.1</td></tr>
-                <tr><td>campus_day_rev_07</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-rev">← Rev</span></td><td>1605.3</td><td>1234.9</td></tr>
-                <tr><td>campus_night_fwd_00</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-night">🌙 Night</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>1376.6</td><td>1117.3</td></tr>
-                <tr><td>campus_night_rev_11</td><td><span class="tag tag-campus">Campus</span></td><td><span class="tag tag-night">🌙 Night</span></td><td><span class="tag tag-rev">← Rev</span></td><td>1527.3</td><td>1224.4</td></tr>
-
-                <tr class="seq-group"><td colspan="6">Circle</td></tr>
-                <tr><td>circle_day_fwd_rev_02</td><td><span class="tag tag-circle">Circle</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td><td>1119.1</td><td>822.1</td></tr>
-                <tr><td>circle_day_fwd_rev_06</td><td><span class="tag tag-circle">Circle</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td><td>987.5</td><td>763.0</td></tr>
-                <tr><td>circle_day_fwd_rev_10</td><td><span class="tag tag-circle">Circle</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td><td>1402.8</td><td>993.2</td></tr>
-                <tr><td>circle_night_fwd_rev_00</td><td><span class="tag tag-circle">Circle</span></td><td><span class="tag tag-night">🌙 Night</span></td><td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td><td>1064.4</td><td>816.9</td></tr>
-
-                <tr class="seq-group"><td colspan="6">Library</td></tr>
-                <tr><td>library_day_fwd_03</td><td><span class="tag tag-library">Library</span></td><td><span class="tag tag-day">☀️ Day</span></td><td><span class="tag tag-fwd">→ Fwd</span></td><td>189.5</td><td>163.3</td></tr>
-
-                <tr class="seq-group"><td colspan="6">Campus + Circle</td></tr>
-                <tr><td>campus_circle_night_rev_12</td><td><span class="tag tag-campus-circle">Campus+Circle</span></td><td><span class="tag tag-night">🌙 Night</span></td><td><span class="tag tag-rev">← Rev</span></td><td>1676.0</td><td>1406.2</td></tr>
-            </tbody>
-        </table>
-    </div>
-</section>
-
-
-<!-- ══ COMPARISON ══ -->
-<section style="background:white;">
-    <div class="section-inner">
-        <h2>Comparison with Existing Datasets</h2>
-        <div class="section-line"></div>
-        <table class="compare-table">
-            <thead>
-                <tr>
-                    <th>Year</th>
-                    <th>Dataset</th>
-                    <th>Seq.</th>
-                    <th>Avg. Length</th>
-                    <th>Mag.</th>
-                    <th>Day/Night</th>
-                    <th>Precise GT</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>2012</td><td>KITTI</td><td>22</td><td>~2 km</td>
-                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
-                </tr>
-                <tr>
-                    <td>2016</td><td>EuRoC</td><td>11</td><td>~80 m</td>
-                    <td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td>
-                </tr>
-                <tr>
-                    <td>2017</td><td>RobotCar</td><td>100+</td><td>~10 km</td>
-                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
-                </tr>
-                <tr>
-                    <td>2017</td><td>MagPIE</td><td>10</td><td>~500 m</td>
-                    <td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td>
-                </tr>
-                <tr>
-                    <td>2018</td><td>TUM VI</td><td>28</td><td>~200 m</td>
-                    <td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td>
-                </tr>
-                <tr>
-                    <td>2020</td><td>Newer College</td><td>4</td><td>~1.5 km</td>
-                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
-                </tr>
-                <tr>
-                    <td>2021</td><td>MagWi</td><td>100+</td><td>Indoor multi-floor</td>
-                    <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td>
-                </tr>
-                <tr>
-                    <td>2023</td><td>Boreas</td><td>40+</td><td>~8 km</td>
-                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
-                </tr>
-                <tr>
-                    <td>2025</td><td>GrandTour</td><td>49</td><td>>10 km</td>
-                    <td><span class="cross">✗</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
-                </tr>
-                <tr class="ours">
-                    <td>2026</td><td>Mag4D (Ours)</td><td>7</td><td>~1.3 km</td>
-                    <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</section>
+    <!-- ══ SENSOR SUITE ══ -->
+    <section style="background:white;">
+        <div class="section-inner">
+            <h2>Sensor Suite</h2>
+            <div class="section-line"></div>
+            <table class="sensor-table">
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>Model</th>
+                        <th>Rate</th>
+                        <th>Specifications</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>📷 Camera</td>
+                        <td>Gemini 336L</td>
+                        <td><span class="sensor-badge">30 Hz</span></td>
+                        <td>Depth 1280×800, H90°/V65°; RGB 1280×800, H94°/V68°</td>
+                    </tr>
+                    <tr>
+                        <td>🔵 LiDAR</td>
+                        <td>Mid-360</td>
+                        <td><span class="sensor-badge">10 Hz</span></td>
+                        <td>360°/59° FOV; 200k pts/s; 70 m range</td>
+                    </tr>
+                    <tr>
+                        <td>📐 IMU</td>
+                        <td>Mid-360 (built-in)</td>
+                        <td><span class="sensor-badge">200 Hz</span></td>
+                        <td>3-axis Gyroscope; 3-axis Accelerometer</td>
+                    </tr>
+                    <tr>
+                        <td>🧲 Magnetometer</td>
+                        <td>3DM-GX5-AHRS</td>
+                        <td><span class="sensor-badge">100 Hz</span></td>
+                        <td>3-axis; ±8 Gauss; Temperature compensated</td>
+                    </tr>
+                    <tr>
+                        <td>🛰️ GPS</td>
+                        <td>EVK-F9P</td>
+                        <td><span class="sensor-badge">1 Hz</span></td>
+                        <td>Multi-band GNSS receiver; Operated in standalone mode (~meter-level accuracy)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
 
-<!-- ══ DATA FORMAT ══ -->
-<section style="background:#f5f7fa;">
-    <div class="section-inner">
-        <h2>Data Format</h2>
-        <div class="section-line"></div>
+    <!-- ══ SEQUENCES ══ -->
+    <section style="background:#f5f7fa;">
+        <div class="section-inner">
+            <h2>Sequences</h2>
+            <div class="section-line"></div>
+            <p style="text-align:center; color:#718096; margin-bottom:32px; font-size:0.95em;">
+                14 sequences · 3 environments · day &amp; night · forward &amp; reverse traversals
+            </p>
+            <table class="seq-table">
+                <thead>
+                    <tr>
+                        <th>Sequence</th>
+                        <th>Env.</th>
+                        <th>Light</th>
+                        <th>Direction</th>
+                        <th>Path (m)</th>
+                        <th>Duration (s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="seq-group">
+                        <td colspan="6">Campus</td>
+                    </tr>
+                    <tr>
+                        <td>campus_day_fwd_01</td>
+                        <td><span class="tag tag-campus">Campus</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-fwd">→ Fwd</span></td>
+                        <td>1382.9</td>
+                        <td>1203.8</td>
+                    </tr>
+                    <tr>
+                        <td>campus_day_fwd_04</td>
+                        <td><span class="tag tag-campus">Campus</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-fwd">→ Fwd</span></td>
+                        <td>1554.1</td>
+                        <td>1291.9</td>
+                    </tr>
+                    <tr>
+                        <td>campus_day_fwd_08</td>
+                        <td><span class="tag tag-campus">Campus</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-fwd">→ Fwd</span></td>
+                        <td>1465.6</td>
+                        <td>1181.2</td>
+                    </tr>
+                    <tr>
+                        <td>campus_day_fwd_09</td>
+                        <td><span class="tag tag-campus">Campus</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-fwd">→ Fwd</span></td>
+                        <td>1443.6</td>
+                        <td>1132.3</td>
+                    </tr>
+                    <tr>
+                        <td>campus_day_rev_05</td>
+                        <td><span class="tag tag-campus">Campus</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-rev">← Rev</span></td>
+                        <td>1637.2</td>
+                        <td>1299.1</td>
+                    </tr>
+                    <tr>
+                        <td>campus_day_rev_07</td>
+                        <td><span class="tag tag-campus">Campus</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-rev">← Rev</span></td>
+                        <td>1605.3</td>
+                        <td>1234.9</td>
+                    </tr>
+                    <tr>
+                        <td>campus_night_fwd_00</td>
+                        <td><span class="tag tag-campus">Campus</span></td>
+                        <td><span class="tag tag-night">🌙 Night</span></td>
+                        <td><span class="tag tag-fwd">→ Fwd</span></td>
+                        <td>1376.6</td>
+                        <td>1117.3</td>
+                    </tr>
+                    <tr>
+                        <td>campus_night_rev_11</td>
+                        <td><span class="tag tag-campus">Campus</span></td>
+                        <td><span class="tag tag-night">🌙 Night</span></td>
+                        <td><span class="tag tag-rev">← Rev</span></td>
+                        <td>1527.3</td>
+                        <td>1224.4</td>
+                    </tr>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start;">
+                    <tr class="seq-group">
+                        <td colspan="6">Circle</td>
+                    </tr>
+                    <tr>
+                        <td>circle_day_fwd_rev_02</td>
+                        <td><span class="tag tag-circle">Circle</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td>
+                        <td>1119.1</td>
+                        <td>822.1</td>
+                    </tr>
+                    <tr>
+                        <td>circle_day_fwd_rev_06</td>
+                        <td><span class="tag tag-circle">Circle</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td>
+                        <td>987.5</td>
+                        <td>763.0</td>
+                    </tr>
+                    <tr>
+                        <td>circle_day_fwd_rev_10</td>
+                        <td><span class="tag tag-circle">Circle</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td>
+                        <td>1402.8</td>
+                        <td>993.2</td>
+                    </tr>
+                    <tr>
+                        <td>circle_night_fwd_rev_00</td>
+                        <td><span class="tag tag-circle">Circle</span></td>
+                        <td><span class="tag tag-night">🌙 Night</span></td>
+                        <td><span class="tag tag-fwdrev">↔ Fwd+Rev</span></td>
+                        <td>1064.4</td>
+                        <td>816.9</td>
+                    </tr>
 
-            <!-- File tree -->
-            <div>
-                <h3 style="font-size:1.05em; color:#0f2027; margin-bottom:14px;">Directory Structure</h3>
-                <div class="file-tree"><pre>
+                    <tr class="seq-group">
+                        <td colspan="6">Library</td>
+                    </tr>
+                    <tr>
+                        <td>library_day_fwd_03</td>
+                        <td><span class="tag tag-library">Library</span></td>
+                        <td><span class="tag tag-day">☀️ Day</span></td>
+                        <td><span class="tag tag-fwd">→ Fwd</span></td>
+                        <td>189.5</td>
+                        <td>163.3</td>
+                    </tr>
+
+                    <tr class="seq-group">
+                        <td colspan="6">Campus + Circle</td>
+                    </tr>
+                    <tr>
+                        <td>campus_circle_night_rev_12</td>
+                        <td><span class="tag tag-campus-circle">Campus+Circle</span></td>
+                        <td><span class="tag tag-night">🌙 Night</span></td>
+                        <td><span class="tag tag-rev">← Rev</span></td>
+                        <td>1676.0</td>
+                        <td>1406.2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+
+    <!-- ══ COMPARISON ══ -->
+    <section style="background:white;">
+        <div class="section-inner">
+            <h2>Comparison with Existing Datasets</h2>
+            <div class="section-line"></div>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Dataset</th>
+                        <th>Seq.</th>
+                        <th>Avg. Length</th>
+                        <th>Mag.</th>
+                        <th>Day/Night</th>
+                        <th>Precise GT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2013</td>
+                        <td>KITTI</td>
+                        <td>22</td>
+                        <td>~2 km</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>2016</td>
+                        <td>EuRoC</td>
+                        <td>11</td>
+                        <td>~80 m</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>2017</td>
+                        <td>RobotCar</td>
+                        <td>100+</td>
+                        <td>~10 km</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>2017</td>
+                        <td>MagPIE</td>
+                        <td>10</td>
+                        <td>~500 m</td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>2018</td>
+                        <td>TUM VI</td>
+                        <td>28</td>
+                        <td>~200 m</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>2020</td>
+                        <td>Newer College</td>
+                        <td>4</td>
+                        <td>~1.5 km</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>2021</td>
+                        <td>MagWi</td>
+                        <td>100+</td>
+                        <td>Indoor multi-floor</td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="cross">✗</span></td>
+                    </tr>
+                    <tr>
+                        <td>2023</td>
+                        <td>Boreas</td>
+                        <td>40+</td>
+                        <td>~8 km</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025</td>
+                        <td>GrandTour</td>
+                        <td>49</td>
+                        <td>>10 km</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr class="ours">
+                        <td>2026</td>
+                        <td>Mag4D (Ours)</td>
+                        <td>7</td>
+                        <td>~1.3 km</td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+
+    <!-- ══ DATA FORMAT ══ -->
+    <section style="background:#f5f7fa;">
+        <div class="section-inner">
+            <h2>Data Format</h2>
+            <div class="section-line"></div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start;">
+
+                <!-- File tree -->
+                <div>
+                    <h3 style="font-size:1.05em; color:#0f2027; margin-bottom:14px;">Directory Structure</h3>
+                    <div class="file-tree">
+                        <pre>
 <span class="dir">Mag4D/</span>
 ├── <span class="dir">campus_day_fwd_01/</span>
 │   ├── <span class="file">raw.bag</span>      <span class="comment"># All ROS topics</span>
@@ -850,76 +1122,85 @@
 ├── <span class="dir">library_day_fwd_03/</span>
 │   └── <span class="file">...</span>
 └── <span class="file">...</span>              <span class="comment"># 14 sequences total</span>
-</pre></div>
-            </div>
+</pre>
+                    </div>
+                </div>
 
-            <!-- ROS Topics -->
-            <div>
-                <h3 style="font-size:1.05em; color:#0f2027; margin-bottom:14px;">ROS Topics</h3>
-                <div class="topic-grid" style="grid-template-columns:1fr;">
-                    <div class="topic-card">
-                        <span class="topic-name">/imu/data</span>
-                        <span class="topic-desc">Linear acceleration and angular velocity</span>
-                    </div>
-                    <div class="topic-card">
-                        <span class="topic-name">/imu/mag</span>
-                        <span class="topic-desc">Tri-axis magnetic field (M<sub>x</sub>, M<sub>y</sub>, M<sub>z</sub>) in µT</span>
-                    </div>
-                    <div class="topic-card">
-                        <span class="topic-name">/lidar/points</span>
-                        <span class="topic-desc">3D LiDAR point clouds (PCD format)</span>
-                    </div>
-                    <div class="topic-card">
-                        <span class="topic-name">/camera/image_raw</span>
-                        <span class="topic-desc">Monocular RGB images</span>
-                    </div>
-                    <div class="topic-card">
-                        <span class="topic-name">/gps/fix</span>
-                        <span class="topic-desc">GPS position measurements</span>
-                    </div>
-                    <div class="topic-card">
-                        <span class="topic-name">/tf</span>
-                        <span class="topic-desc">Coordinate frame transformations</span>
+                <!-- ROS Topics -->
+                <div>
+                    <h3 style="font-size:1.05em; color:#0f2027; margin-bottom:14px;">ROS Topics</h3>
+                    <div class="topic-grid" style="grid-template-columns:1fr;">
+                        <div class="topic-card">
+                            <span class="topic-name">/imu/data</span>
+                            <span class="topic-desc">Linear acceleration and angular velocity</span>
+                        </div>
+                        <div class="topic-card">
+                            <span class="topic-name">/imu/mag</span>
+                            <span class="topic-desc">Tri-axis magnetic field (M<sub>x</sub>, M<sub>y</sub>,
+                                M<sub>z</sub>) in µT</span>
+                        </div>
+                        <div class="topic-card">
+                            <span class="topic-name">/lidar/points</span>
+                            <span class="topic-desc">3D LiDAR point clouds (PCD format)</span>
+                        </div>
+                        <div class="topic-card">
+                            <span class="topic-name">/camera/image_raw</span>
+                            <span class="topic-desc">Monocular RGB images</span>
+                        </div>
+                        <div class="topic-card">
+                            <span class="topic-name">/gps/fix</span>
+                            <span class="topic-desc">GPS position measurements</span>
+                        </div>
+                        <div class="topic-card">
+                            <span class="topic-name">/tf</span>
+                            <span class="topic-desc">Coordinate frame transformations</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══ CITATION ══ -->
-<section style="background:white;">
-    <div class="section-inner">
-        <h2>Citation</h2>
-        <div class="section-line"></div>
-        <div class="bibtex">
-            <button class="copy-btn" onclick="copyBib()">Copy</button>
-<pre id="bib-content">@inproceedings{}</pre>
+    <!-- ══ CITATION ══ -->
+    <section style="background:white;">
+        <div class="section-inner">
+            <h2>Citation</h2>
+            <div class="section-line"></div>
+            <div class="bibtex">
+                <button class="copy-btn" onclick="copyBib()">Copy</button>
+                <pre id="bib-content">@inproceedings{nayak2026mag4d,
+  author    = {Nayak, Bibhutibhusan and Ju, Hyoseok and Kim, Giseop},
+  title     = {Mag4D-SLAM Dataset: A Repeated-Traversal Multi-Modal 4D Geomagnetic Dataset for Localization and Mapping},
+  booktitle = {Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  year      = {2026},
+  note      = {to appear, arXiv preprint arXiv:2607.21986}
+}</pre>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══ FOOTER ══ -->
-<footer>
-    <p>© 2026 Anonymous Lab · All rights reserved.</p>
-    <p style="margin-top:8px;">
-        <a href="#">GitHub</a> &nbsp;|&nbsp;
-        <a href="#">Lab Website</a>
-    </p>
-</footer>
+    <!-- ══ FOOTER ══ -->
+    <footer>
+        <p>© 2026 APRL Lab, DGIST · All rights reserved.</p>
+        <p style="margin-top:8px;">
+            <a href="https://team-aprl.github.io/" target="_blank">Lab Website</a> &nbsp;|&nbsp;
+            <a href="#">GitHub</a>
+        </p>
+    </footer>
 
-<script>
-    function copyBib() {
-        const text = document.getElementById('bib-content').textContent;
-        navigator.clipboard.writeText(text).then(() => {
-            const btn = document.querySelector('.copy-btn');
-            btn.textContent = 'Copied!';
-            setTimeout(() => btn.textContent = 'Copy', 2000);
-        });
-    }
-</script>
+    <script>
+        function copyBib() {
+            const text = document.getElementById('bib-content').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 2000);
+            });
+        }
+    </script>
 
 </body>
+
 </html>
