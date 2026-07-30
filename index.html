@@ -823,6 +823,80 @@
     </section>
 
 
+    <!-- ══ SENSOR EXTRINSICS ══ -->
+    <section id="extrinsics" style="background:#f5f7fa;">
+        <div class="section-inner">
+            <h2>Sensor Extrinsics</h2>
+            <div class="section-line"></div>
+            <p style="text-align:center; color:#718096; margin-bottom:32px; font-size:0.95em;">
+                All transformations are defined with <strong>LiDAR</strong> as the base frame&ensp;·&ensp;T<sub>lidar←sensor</sub>
+            </p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start;">
+
+                <!-- Left: 360° GIF -->
+                <div style="text-align:center;">
+                    <img src="sensor_extrinsics_360.gif" alt="Sensor extrinsic coordinate frames animated 360° view"
+                         style="width:100%; max-width:540px; border-radius:14px; box-shadow:0 6px 28px rgba(0,0,0,0.18);">
+                    <p style="margin-top:12px; font-size:0.82em; color:#718096;">
+                        RGB axes = XYZ &ensp;·&ensp; Dashed lines indicate sensor offsets from LiDAR origin
+                    </p>
+                </div>
+
+                <!-- Right: Extrinsic Parameters -->
+                <div>
+                    <div style="background:#0f2027; border-radius:14px; padding:26px 28px; box-shadow:0 4px 20px rgba(15,32,39,0.25); position:relative;">
+                        <button onclick="copyExtrinsics()" style="position:absolute; top:14px; right:14px; background:#00d2b4; color:#0f2027; border:none; padding:7px 16px; border-radius:6px; font-size:0.82em; font-weight:700; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='#00f0ce'" onmouseout="this.style.background='#00d2b4'">Copy</button>
+                        <pre id="extrinsics-content" style="color:#a8d8cf; font-family:'Courier New',monospace; font-size:0.82em; line-height:1.85; margin:0; overflow-x:auto; white-space:pre;"><span style="color:#4a6a62"># ==============================================================</span>
+<span style="color:#4a6a62"># Sensor Extrinsic Parameters (Base Frame: LiDAR)</span>
+<span style="color:#4a6a62"># ==============================================================</span>
+
+<span style="color:#4a6a62"># 1. Camera → LiDAR</span>
+<span style="color:#00d2b4">T_lidar_camera</span>: [
+   0.0062967,  0.0002136,  0.9999802,  <span style="color:#7dd3f5">0.0720748</span>,
+  -0.9999516,  0.0075562,  0.0062949,  <span style="color:#7dd3f5">0.0193199</span>,
+  -0.0075547, -0.9999714,  0.0002611, <span style="color:#7dd3f5">-0.0151779</span>,
+   0.0,        0.0,        0.0,        1.0
+]
+
+<span style="color:#4a6a62"># 2. Magnetometer → LiDAR</span>
+<span style="color:#00d2b4">T_lidar_mag</span>: [
+  -1.0,  0.0,  0.0,  <span style="color:#7dd3f5">0.115</span>,
+   0.0,  1.0,  0.0,  <span style="color:#7dd3f5">0.0</span>,
+   0.0,  0.0, -1.0, <span style="color:#7dd3f5">-0.13</span>,
+   0.0,  0.0,  0.0,  1.0
+]
+
+<span style="color:#4a6a62"># 3. IMU → LiDAR (Livox Mid-360 Factory Spec)</span>
+<span style="color:#00d2b4">T_lidar_imu</span>: [
+   1.0,  0.0,  0.0,  <span style="color:#7dd3f5">0.011</span>,
+   0.0,  1.0,  0.0,  <span style="color:#7dd3f5">0.02329</span>,
+   0.0,  0.0,  1.0, <span style="color:#7dd3f5">-0.04412</span>,
+   0.0,  0.0,  0.0,  1.0
+]</pre>
+                    </div>
+
+                    <!-- Offset summary cards -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:16px;">
+                        <div style="background:white; border:1px solid #e2e8f0; border-radius:10px; padding:14px 12px; text-align:center;">
+                            <div style="font-size:0.78em; color:#718096; margin-bottom:4px;">📷 Camera</div>
+                            <div style="font-size:1.1em; font-weight:800; color:#FF6B6B;">7.6 cm</div>
+                        </div>
+                        <div style="background:white; border:1px solid #e2e8f0; border-radius:10px; padding:14px 12px; text-align:center;">
+                            <div style="font-size:0.78em; color:#718096; margin-bottom:4px;">🧲 Magnetometer</div>
+                            <div style="font-size:1.1em; font-weight:800; color:#4ECDC4;">17.4 cm</div>
+                        </div>
+                        <div style="background:white; border:1px solid #e2e8f0; border-radius:10px; padding:14px 12px; text-align:center;">
+                            <div style="font-size:0.78em; color:#718096; margin-bottom:4px;">📐 IMU</div>
+                            <div style="font-size:1.1em; font-weight:800; color:#FFD93D;">5.1 cm</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
     <!-- ══ SEQUENCES ══ -->
     <section style="background:#f5f7fa;">
         <div class="section-inner">
@@ -1195,6 +1269,15 @@
             const text = document.getElementById('bib-content').textContent;
             navigator.clipboard.writeText(text).then(() => {
                 const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 2000);
+            });
+        }
+
+        function copyExtrinsics() {
+            const text = document.getElementById('extrinsics-content').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
                 btn.textContent = 'Copied!';
                 setTimeout(() => btn.textContent = 'Copy', 2000);
             });
