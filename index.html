@@ -698,7 +698,7 @@
         }
 
         .preview-btns button {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(11, 20, 24, 0.8);
             color: #e2e8f0;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 6px;
@@ -708,7 +708,7 @@
         }
 
         .preview-btns button:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(40, 60, 70, 0.9);
         }
 
         .preview-msg {
@@ -749,6 +749,59 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+        }
+
+        .preview-btns {
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            max-width: 60%;
+        }
+
+        .preview-thumb {
+            position: absolute;
+            left: 16px;
+            bottom: 40px;
+            background: rgba(11, 20, 24, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 4px;
+            pointer-events: none;
+        }
+
+        #thumb-img {
+            width: 192px;
+            height: 108px;
+            border-radius: 4px;
+            background-repeat: no-repeat;
+            background-color: #000;
+        }
+
+        #thumb-cap {
+            color: #e2e8f0;
+            font-size: 0.75em;
+            padding: 3px 2px 0;
+        }
+
+        .preview-credit {
+            position: absolute;
+            right: 12px;
+            bottom: 8px;
+            color: #64748b;
+            font-size: 0.68em;
+            pointer-events: none;
+        }
+
+        #preview-plot {
+            display: block;
+            width: 100%;
+            height: 130px;
+            margin-top: 8px;
+            border-radius: 12px;
+            cursor: crosshair;
+        }
+
+        #preview-plot[hidden] {
+            display: none;
         }
 
         @media (max-width: 640px) {
@@ -1184,7 +1237,16 @@
                     <button data-view="3d">3D</button>
                     <button id="preview-color">Color: RGB</button>
                     <button id="preview-path">Path: |M|</button>
+                    <button id="preview-curtain">Curtain: off</button>
+                    <button id="preview-runs">Other runs: off</button>
+                    <button id="preview-sat">Satellite: on</button>
+                    <button id="preview-play">▶ Play</button>
                 </div>
+                <div class="preview-thumb" id="preview-thumb" hidden>
+                    <div id="thumb-img"></div>
+                    <div id="thumb-cap"></div>
+                </div>
+                <div class="preview-credit" id="preview-sat-credit" hidden>Imagery © Esri, Maxar, Earthstar Geographics</div>
                 <div class="preview-cbar" id="preview-cbar" hidden>
                     <div id="cbar-title"></div>
                     <div class="cbar-row">
@@ -1199,6 +1261,7 @@
                 </div>
                 <div class="preview-msg" id="preview-msg">Click a sequence marked ▸ 3D to preview its trajectory and point cloud map.</div>
             </div>
+            <canvas id="preview-plot" hidden></canvas>
         </div>
     </section>
 
@@ -1441,212 +1504,7 @@
         { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
                        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
     </script>
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { Line2 } from 'three/addons/lines/Line2.js';
-        import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
-        import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-
-        // Sequences with exported previews (scripts/export_preview.py)
-        const AVAILABLE = new Set([
-            'library_day_fwd_03', 'campus_day_fwd_04', 'campus_day_rev_05', 'circle_day_fwd_rev_06',
-            'campus_day_rev_07', 'campus_day_fwd_08', 'campus_day_fwd_09', 'circle_day_fwd_rev_10',
-            'campus_night_rev_11', 'campus_circle_night_rev_12',
-            'campus_day_fwd_01', 'campus_night_fwd_00', 'circle_day_fwd_rev_02', 'circle_night_fwd_rev_00',
-        ]);
-
-        const box = document.getElementById('preview');
-        const msg = document.getElementById('preview-msg');
-        const info = document.getElementById('preview-info');
-        let renderer, scene, camera, controls, lineMat, objects = [], bounds, loadId = 0;
-        let colorMode = 'rgb', mapGeom, mapColors;
-        // Path coloring: elapsed time, or magnetometer on a range shared by all sequences
-        // (1–99 % of the calibrated sequences, so uncalibrated ones saturate)
-        const PATH_MODES = [
-            { key: 'time' },
-            { key: '|M|', lo: 15, hi: 55 },
-            { key: 'Mx', lo: -45, hi: 45, axis: 0 },
-            { key: 'My', lo: -45, hi: 45, axis: 1 },
-            { key: 'Mz', lo: -20, hi: 20, axis: 2 },
-        ];
-        const START = new THREE.Color(0x22c55e), END = new THREE.Color(0xef4444);
-        const ramp = (t, c) => c.setHSL(0.7 * (1 - t), 0.9, 0.5);  // blue (low) → red (high)
-        let pathMode = 1, pathGeom, pathData;
-
-        const render = () => renderer.render(scene, camera);
-
-        function init() {
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-            box.prepend(renderer.domElement);
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0b1418);
-            camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
-            camera.up.set(0, 0, 1);  // data is z-up (UTM)
-            controls = new OrbitControls(camera, renderer.domElement);
-            controls.addEventListener('change', render);
-            lineMat = new LineMaterial({ linewidth: 4, vertexColors: true, depthTest: false });
-            new ResizeObserver(() => {
-                const w = box.clientWidth, h = box.clientHeight;
-                renderer.setSize(w, h);
-                camera.aspect = w / h;
-                camera.updateProjectionMatrix();
-                lineMat.resolution.set(w, h);
-                render();
-            }).observe(box);
-            box.querySelectorAll('[hidden]').forEach(el => el.hidden = false);
-            box.querySelectorAll('[data-view]').forEach(b => b.onclick = () => setView(b.dataset.view));
-            document.getElementById('preview-path').onclick = () => {
-                pathMode = (pathMode + 1) % PATH_MODES.length;
-                applyPath();
-            };
-            document.getElementById('preview-color').onclick = () => {
-                colorMode = colorMode === 'rgb' ? 'height' : 'rgb';
-                applyColors();
-            };
-        }
-
-        function applyColors() {
-            const mode = mapColors.rgb ? colorMode : 'height';
-            mapGeom.setAttribute('color', mapColors[mode]);
-            document.getElementById('preview-color').textContent = mode === 'rgb' ? 'Color: RGB' : 'Color: Height';
-            document.getElementById('preview-color').hidden = !mapColors.rgb;
-            document.getElementById('preview-color-label').textContent = mode === 'rgb' ? 'camera RGB' : 'height';
-            render();
-        }
-
-        function applyPath() {
-            const { traj, mag } = pathData, n = traj.length / 3;
-            const m = mag ? PATH_MODES[pathMode] : PATH_MODES[0];
-            const tc = new Float32Array(traj.length), c = new THREE.Color();
-            for (let i = 0; i < n; i++) {
-                if (m.key === 'time') c.lerpColors(START, END, i / (n - 1));
-                else {
-                    const v = m.axis === undefined ? Math.hypot(mag[3 * i], mag[3 * i + 1], mag[3 * i + 2]) : mag[3 * i + m.axis];
-                    ramp(Math.min(Math.max((v - m.lo) / (m.hi - m.lo), 0), 1), c);
-                }
-                tc.set([c.r, c.g, c.b], i * 3);
-            }
-            pathGeom.setColors(tc);
-
-            const btn = document.getElementById('preview-path'), cbar = document.getElementById('preview-cbar');
-            btn.textContent = `Path: ${m.key}`;
-            btn.hidden = !mag;
-            cbar.hidden = m.key === 'time';
-            if (!cbar.hidden) {
-                const stops = [0, 0.25, 0.5, 0.75, 1].map(t => ramp(t, c).getStyle());
-                document.getElementById('cbar-grad').style.background = `linear-gradient(to top, ${stops.join(', ')})`;
-                document.getElementById('cbar-title').textContent = `${m.key} (µT)`;
-                document.getElementById('cbar-ticks').innerHTML = [m.hi, (m.lo + m.hi) / 2, m.lo].map(v => `<span>${v}</span>`).join('');
-            }
-            render();
-        }
-
-        function setView(mode) {
-            const c = bounds.getCenter(new THREE.Vector3());
-            const s = bounds.getSize(new THREE.Vector3());
-            const d = Math.max(s.x, s.y);
-            camera.position.copy(c).add(mode === 'top' ? new THREE.Vector3(0, -0.01, d * 1.25) : new THREE.Vector3(0, -d * 0.95, d * 0.8));
-            controls.target.copy(c);
-            controls.update();
-            render();
-        }
-
-        function parse(buf) {
-            const [nMap, nTraj] = new Int32Array(buf, 0, 2);
-            const off = new Float32Array(buf, 8, 3);
-            const q = new Uint16Array(buf, 20, nMap * 3);
-            const trajOff = 20 + Math.ceil(nMap * 3 / 2) * 4;
-            const traj = new Float32Array(buf, trajOff, nTraj * 3);
-            const rgbOff = trajOff + nTraj * 12;
-            const rgb = buf.byteLength >= rgbOff + nMap * 3 ? new Uint8Array(buf, rgbOff, nMap * 3) : null;
-            const magOff = rgbOff + Math.ceil(nMap * 3 / 4) * 4;
-            const mag = buf.byteLength >= magOff + nTraj * 12 ? new Float32Array(buf, magOff, nTraj * 3) : null;
-            const pos = new Float32Array(nMap * 3);
-            for (let i = 0; i < pos.length; i++) pos[i] = q[i] * 0.01 + off[i % 3];
-            return { pos, traj, rgb, mag };
-        }
-
-        function heightColors(pos) {
-            const z = pos.filter((_, i) => i % 3 === 2).sort();
-            const lo = z[Math.floor(z.length * 0.02)], hi = z[Math.floor(z.length * 0.98)];
-            const col = new Float32Array(pos.length), c = new THREE.Color();
-            for (let i = 0; i < pos.length; i += 3) {
-                const t = Math.min(Math.max((pos[i + 2] - lo) / (hi - lo), 0), 1);
-                c.setHSL(0.62 - 0.5 * t, 0.5, 0.28 + 0.2 * t);
-                col.set([c.r, c.g, c.b], i);
-            }
-            return col;
-        }
-
-        async function load(seq) {
-            if (!renderer) init();
-            const id = ++loadId;
-            msg.textContent = `Loading ${seq} …`;
-            msg.hidden = false;
-            let data;
-            try {
-                const res = await fetch(`assets/preview/${seq}.bin`);
-                if (!res.ok) throw new Error(res.status);
-                data = parse(await res.arrayBuffer());
-            } catch (e) {
-                if (id === loadId) msg.textContent = `Failed to load ${seq} (${e.message}).`;
-                return;
-            }
-            if (id !== loadId) return;  // a newer click won
-
-            objects.forEach(o => { scene.remove(o); o.geometry.dispose(); });
-            const { pos, traj, rgb, mag } = data;
-
-            const g = new THREE.BufferGeometry();
-            g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-            mapGeom = g;
-            mapColors = {
-                height: new THREE.BufferAttribute(heightColors(pos), 3),
-                rgb: rgb && new THREE.BufferAttribute(rgb, 3, true),
-            };
-            applyColors();
-            const points = new THREE.Points(g, new THREE.PointsMaterial({ size: 1.5, sizeAttenuation: false, vertexColors: true }));
-
-            const lift = traj.map((v, i) => i % 3 === 2 ? v + 1 : v);  // draw above ground
-            const lg = new LineGeometry();
-            lg.setPositions(lift);
-            pathGeom = lg;
-            pathData = { traj, mag };
-            applyPath();
-            const line = new Line2(lg, lineMat);
-            line.renderOrder = 1;
-
-            const dot = (k, color) => {  // fixed screen-size marker, drawn on top
-                const dg = new THREE.BufferGeometry();
-                dg.setAttribute('position', new THREE.BufferAttribute(lift.slice(k, k + 3), 3));
-                const m = new THREE.Points(dg, new THREE.PointsMaterial({ color, size: 14, sizeAttenuation: false, depthTest: false }));
-                m.renderOrder = 2;
-                return m;
-            };
-            objects = [points, line, dot(0, 0x22c55e), dot(traj.length - 3, 0xef4444)];
-            scene.add(...objects);
-
-            g.computeBoundingBox();
-            bounds = g.boundingBox;
-            info.innerHTML = `<b>${seq}</b><br>${(pos.length / 3).toLocaleString()} map points (0.3 m voxel)`;
-            msg.hidden = true;
-            setView('top');
-        }
-
-        document.querySelectorAll('.seq-table tbody tr:not(.seq-group)').forEach(tr => {
-            const seq = tr.cells[0].textContent.trim();
-            if (!AVAILABLE.has(seq)) { tr.title = 'Preview coming soon'; return; }
-            tr.classList.add('has-preview');
-            tr.onclick = () => {
-                document.querySelectorAll('.seq-table tr.active').forEach(r => r.classList.remove('active'));
-                tr.classList.add('active');
-                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                load(seq);
-            };
-        });
-    </script>
+    <script type="module" src="assets/viewer.js"></script>
 
 </body>
 
