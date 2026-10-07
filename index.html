@@ -626,6 +626,109 @@
                 padding: 22px 20px;
             }
         }
+        /* ── Sequence preview ── */
+        .seq-table tbody tr.has-preview {
+            cursor: pointer;
+        }
+
+        .seq-table tbody tr.has-preview td:first-child::after {
+            content: ' ▸ 3D';
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #0d9488;
+        }
+
+        .seq-table tbody tr.active {
+            background: #ccfbf1;
+        }
+
+        .seq-table tbody tr.active:hover {
+            background: #ccfbf1;
+        }
+
+        #preview {
+            position: relative;
+            height: 540px;
+            margin-top: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0b1418;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        #preview canvas {
+            display: block;
+        }
+
+        #preview [hidden] {
+            display: none;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            left: 16px;
+            top: 12px;
+            color: #e2e8f0;
+            font-size: 0.85em;
+            pointer-events: none;
+        }
+
+        .preview-overlay b {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #5eead4;
+        }
+
+        .preview-legend {
+            position: absolute;
+            left: 16px;
+            bottom: 12px;
+            color: #94a3b8;
+            font-size: 0.78em;
+            pointer-events: none;
+        }
+
+        .preview-btns {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .preview-btns button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.78em;
+            cursor: pointer;
+        }
+
+        .preview-btns button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-msg {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 0.95em;
+            pointer-events: none;
+        }
+
+        @media (max-width: 640px) {
+            #preview {
+                height: 400px;
+            }
+        }
     </style>
 </head>
 
@@ -1046,6 +1149,21 @@
                     </tr>
                 </tbody>
             </table>
+
+            <div id="preview">
+                <div class="preview-overlay" id="preview-info"></div>
+                <div class="preview-btns" hidden>
+                    <button data-view="top">Top</button>
+                    <button data-view="3d">3D</button>
+                    <button id="preview-color">Color: RGB</button>
+                </div>
+                <div class="preview-legend" hidden>
+                    <span style="color:#22c55e">●</span> start &nbsp;
+                    <span style="color:#ef4444">●</span> end &nbsp;·&nbsp; map colored by <span id="preview-color-label">camera RGB</span>
+                    &nbsp;·&nbsp; drag: rotate · right-drag: pan · scroll: zoom
+                </div>
+                <div class="preview-msg" id="preview-msg">Click a sequence marked ▸ 3D to preview its trajectory and point cloud map.</div>
+            </div>
         </div>
     </section>
 
@@ -1282,6 +1400,178 @@
                 setTimeout(() => btn.textContent = 'Copy', 2000);
             });
         }
+    </script>
+
+    <script type="importmap">
+        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                       "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { Line2 } from 'three/addons/lines/Line2.js';
+        import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+        import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+
+        // Sequences with exported previews (scripts/export_preview.py)
+        const AVAILABLE = new Set([
+            'library_day_fwd_03', 'campus_day_fwd_04', 'campus_day_rev_05', 'circle_day_fwd_rev_06',
+            'campus_day_rev_07', 'campus_day_fwd_08', 'campus_day_fwd_09', 'circle_day_fwd_rev_10',
+            'campus_night_rev_11', 'campus_circle_night_rev_12',
+            'campus_day_fwd_01', 'campus_night_fwd_00', 'circle_day_fwd_rev_02', 'circle_night_fwd_rev_00',
+        ]);
+        // No own map: trajectory aligned onto the reference map of the same route
+        const REF_MAP = {
+            campus_day_fwd_01: 'campus_day_fwd_04', campus_night_fwd_00: 'campus_day_fwd_04',
+            circle_day_fwd_rev_02: 'circle_day_fwd_rev_10', circle_night_fwd_rev_00: 'circle_day_fwd_rev_10',
+        };
+
+        const box = document.getElementById('preview');
+        const msg = document.getElementById('preview-msg');
+        const info = document.getElementById('preview-info');
+        let renderer, scene, camera, controls, lineMat, objects = [], bounds, loadId = 0;
+        let colorMode = 'rgb', mapGeom, mapColors;
+
+        const render = () => renderer.render(scene, camera);
+
+        function init() {
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+            box.prepend(renderer.domElement);
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0b1418);
+            camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
+            camera.up.set(0, 0, 1);  // data is z-up (UTM)
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.addEventListener('change', render);
+            lineMat = new LineMaterial({ linewidth: 4, vertexColors: true, depthTest: false });
+            new ResizeObserver(() => {
+                const w = box.clientWidth, h = box.clientHeight;
+                renderer.setSize(w, h);
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                lineMat.resolution.set(w, h);
+                render();
+            }).observe(box);
+            box.querySelectorAll('[hidden]').forEach(el => el.hidden = false);
+            box.querySelectorAll('[data-view]').forEach(b => b.onclick = () => setView(b.dataset.view));
+            document.getElementById('preview-color').onclick = () => {
+                colorMode = colorMode === 'rgb' ? 'height' : 'rgb';
+                applyColors();
+            };
+        }
+
+        function applyColors() {
+            const mode = mapColors.rgb ? colorMode : 'height';
+            mapGeom.setAttribute('color', mapColors[mode]);
+            document.getElementById('preview-color').textContent = mode === 'rgb' ? 'Color: RGB' : 'Color: Height';
+            document.getElementById('preview-color').hidden = !mapColors.rgb;
+            document.getElementById('preview-color-label').textContent = mode === 'rgb' ? 'camera RGB' : 'height';
+            render();
+        }
+
+        function setView(mode) {
+            const c = bounds.getCenter(new THREE.Vector3());
+            const s = bounds.getSize(new THREE.Vector3());
+            const d = Math.max(s.x, s.y);
+            camera.position.copy(c).add(mode === 'top' ? new THREE.Vector3(0, -0.01, d * 1.25) : new THREE.Vector3(0, -d * 0.95, d * 0.8));
+            controls.target.copy(c);
+            controls.update();
+            render();
+        }
+
+        function parse(buf) {
+            const [nMap, nTraj] = new Int32Array(buf, 0, 2);
+            const off = new Float32Array(buf, 8, 3);
+            const q = new Uint16Array(buf, 20, nMap * 3);
+            const trajOff = 20 + Math.ceil(nMap * 3 / 2) * 4;
+            const traj = new Float32Array(buf, trajOff, nTraj * 3);
+            const rgbOff = trajOff + nTraj * 12;
+            const rgb = buf.byteLength >= rgbOff + nMap * 3 ? new Uint8Array(buf, rgbOff, nMap * 3) : null;
+            const pos = new Float32Array(nMap * 3);
+            for (let i = 0; i < pos.length; i++) pos[i] = q[i] * 0.01 + off[i % 3];
+            return { pos, traj, rgb };
+        }
+
+        function heightColors(pos) {
+            const z = pos.filter((_, i) => i % 3 === 2).sort();
+            const lo = z[Math.floor(z.length * 0.02)], hi = z[Math.floor(z.length * 0.98)];
+            const col = new Float32Array(pos.length), c = new THREE.Color();
+            for (let i = 0; i < pos.length; i += 3) {
+                const t = Math.min(Math.max((pos[i + 2] - lo) / (hi - lo), 0), 1);
+                c.setHSL(0.62 - 0.5 * t, 0.5, 0.28 + 0.2 * t);
+                col.set([c.r, c.g, c.b], i);
+            }
+            return col;
+        }
+
+        async function load(seq) {
+            if (!renderer) init();
+            const id = ++loadId;
+            msg.textContent = `Loading ${seq} …`;
+            msg.hidden = false;
+            let data;
+            try {
+                const res = await fetch(`assets/preview/${seq}.bin`);
+                if (!res.ok) throw new Error(res.status);
+                data = parse(await res.arrayBuffer());
+            } catch (e) {
+                if (id === loadId) msg.textContent = `Failed to load ${seq} (${e.message}).`;
+                return;
+            }
+            if (id !== loadId) return;  // a newer click won
+
+            objects.forEach(o => { scene.remove(o); o.geometry.dispose(); });
+            const { pos, traj, rgb } = data;
+
+            const g = new THREE.BufferGeometry();
+            g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            mapGeom = g;
+            mapColors = {
+                height: new THREE.BufferAttribute(heightColors(pos), 3),
+                rgb: rgb && new THREE.BufferAttribute(rgb, 3, true),
+            };
+            applyColors();
+            const points = new THREE.Points(g, new THREE.PointsMaterial({ size: 1.5, sizeAttenuation: false, vertexColors: true }));
+
+            const n = traj.length / 3, lift = traj.map((v, i) => i % 3 === 2 ? v + 1 : v);  // draw above ground
+            const tc = new Float32Array(traj.length), a = new THREE.Color(0x22c55e), b = new THREE.Color(0xef4444), c = new THREE.Color();
+            for (let i = 0; i < n; i++) { c.lerpColors(a, b, i / (n - 1)); tc.set([c.r, c.g, c.b], i * 3); }
+            const lg = new LineGeometry();
+            lg.setPositions(lift);
+            lg.setColors(tc);
+            const line = new Line2(lg, lineMat);
+            line.renderOrder = 1;
+
+            const dot = (k, color) => {  // fixed screen-size marker, drawn on top
+                const dg = new THREE.BufferGeometry();
+                dg.setAttribute('position', new THREE.BufferAttribute(lift.slice(k, k + 3), 3));
+                const m = new THREE.Points(dg, new THREE.PointsMaterial({ color, size: 14, sizeAttenuation: false, depthTest: false }));
+                m.renderOrder = 2;
+                return m;
+            };
+            objects = [points, line, dot(0, 0x22c55e), dot(traj.length - 3, 0xef4444)];
+            scene.add(...objects);
+
+            g.computeBoundingBox();
+            bounds = g.boundingBox;
+            info.innerHTML = `<b>${seq}</b><br>${(pos.length / 3).toLocaleString()} map points (0.5 m voxel)` +
+                (REF_MAP[seq] ? `<br>map shown: ${REF_MAP[seq]} (same route)` : '');
+            msg.hidden = true;
+            setView('3d');
+        }
+
+        document.querySelectorAll('.seq-table tbody tr:not(.seq-group)').forEach(tr => {
+            const seq = tr.cells[0].textContent.trim();
+            if (!AVAILABLE.has(seq)) { tr.title = 'Preview coming soon'; return; }
+            tr.classList.add('has-preview');
+            tr.onclick = () => {
+                document.querySelectorAll('.seq-table tr.active').forEach(r => r.classList.remove('active'));
+                tr.classList.add('active');
+                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                load(seq);
+            };
+        });
     </script>
 
 </body>
